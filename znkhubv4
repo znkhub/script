@@ -1,0 +1,995 @@
+import { useState } from "react";
+
+// ─── Translations ────────────────────────────────────────────────────────────
+const LANGS = [
+  { code: "fr", label: "🇫🇷 FR" },
+  { code: "en", label: "🇬🇧 EN" },
+  { code: "es", label: "🇪🇸 ES" },
+  { code: "zh", label: "🇨🇳 ZH" },
+  { code: "ja", label: "🇯🇵 JP" },
+];
+
+const T: Record<string, Record<string, string>> = {
+  fr: {
+    hub_title: "ZNK HUB BEST CHEAT",
+    hub_subtitle: "Interface de triche avancée",
+    key_title: "ZNK HUB — Authentification",
+    key_sub: "Entrez votre clé d'accès pour continuer",
+    key_label: "CLÉ D'ACCÈS",
+    key_placeholder: "Entrez la key ici...",
+    confirm_btn: "VALIDER LA CLÉ",
+    key_info: "🔑 Key disponible sur le Discord ZNK",
+    valid_key: "✅ Clé valide ! Chargement...",
+    invalid_key: "❌ Clé invalide. Vérifiez et réessayez.",
+    locked_msg: "🔒 Trop de tentatives. Attendez 30s.",
+    tab_player: "Joueur",
+    tab_combat: "Combat",
+    tab_world: "Monde",
+    tab_visual: "Visuel",
+    tab_misc: "Divers",
+    speed_hack: "Speed Hack",
+    fly_hack: "Fly Hack",
+    noclip: "NoClip",
+    inf_jump: "Saut Infini",
+    teleport: "Téléportation",
+    aimbot: "Aimbot",
+    silent_aim: "Silent Aim",
+    esp_box: "ESP Boîtes",
+    esp_names: "ESP Noms",
+    no_recoil: "Pas de Recul",
+    inf_ammo: "Munitions Infinies",
+    speed_bullet: "Balles Rapides",
+    fullbright: "Fullbright",
+    no_fog: "Pas de Brouillard",
+    time_day: "Jour",
+    time_night: "Nuit",
+    weather: "Météo",
+    xray: "X-Ray",
+    tracers: "Traceurs",
+    wallhack: "Wallhack",
+    chams: "Chams",
+    crosshair: "Crosshair",
+    anti_afk: "Anti-AFK",
+    auto_farm: "Auto-Farm",
+    inf_money: "Argent Infini",
+    god_mode: "God Mode",
+    credits: "Crédits",
+    section_movement: "Mouvement",
+    section_utility: "Utilitaire",
+    section_aim: "Visée",
+    section_detection: "Détection",
+    section_enemy: "Ennemi",
+    section_env: "Environnement",
+    section_time: "Temps",
+    section_enemy_vis: "Ennemis",
+    section_ui: "Interface",
+    section_game: "Jeu",
+    section_other: "Autre",
+    speed_label: "Vitesse",
+    fov_label: "FOV Aimbot",
+  },
+  en: {
+    hub_title: "ZNK HUB BEST CHEAT",
+    hub_subtitle: "Advanced cheat interface",
+    key_title: "ZNK HUB — Authentication",
+    key_sub: "Enter your access key to continue",
+    key_label: "ACCESS KEY",
+    key_placeholder: "Enter key here...",
+    confirm_btn: "VALIDATE KEY",
+    key_info: "🔑 Key available on ZNK Discord",
+    valid_key: "✅ Valid key! Loading...",
+    invalid_key: "❌ Invalid key. Check and retry.",
+    locked_msg: "🔒 Too many attempts. Wait 30s.",
+    tab_player: "Player",
+    tab_combat: "Combat",
+    tab_world: "World",
+    tab_visual: "Visual",
+    tab_misc: "Misc",
+    speed_hack: "Speed Hack",
+    fly_hack: "Fly Hack",
+    noclip: "NoClip",
+    inf_jump: "Infinite Jump",
+    teleport: "Teleport",
+    aimbot: "Aimbot",
+    silent_aim: "Silent Aim",
+    esp_box: "ESP Boxes",
+    esp_names: "ESP Names",
+    no_recoil: "No Recoil",
+    inf_ammo: "Infinite Ammo",
+    speed_bullet: "Speed Bullets",
+    fullbright: "Fullbright",
+    no_fog: "No Fog",
+    time_day: "Day",
+    time_night: "Night",
+    weather: "Weather",
+    xray: "X-Ray",
+    tracers: "Tracers",
+    wallhack: "Wallhack",
+    chams: "Chams",
+    crosshair: "Crosshair",
+    anti_afk: "Anti-AFK",
+    auto_farm: "Auto-Farm",
+    inf_money: "Infinite Money",
+    god_mode: "God Mode",
+    credits: "Credits",
+    section_movement: "Movement",
+    section_utility: "Utility",
+    section_aim: "Aim",
+    section_detection: "Detection",
+    section_enemy: "Enemy",
+    section_env: "Environment",
+    section_time: "Time",
+    section_enemy_vis: "Enemies",
+    section_ui: "Interface",
+    section_game: "Game",
+    section_other: "Other",
+    speed_label: "Speed",
+    fov_label: "Aimbot FOV",
+  },
+  es: {
+    hub_title: "ZNK HUB BEST CHEAT",
+    hub_subtitle: "Interfaz de trampa avanzada",
+    key_title: "ZNK HUB — Autenticación",
+    key_sub: "Ingresa tu clave de acceso para continuar",
+    key_label: "CLAVE DE ACCESO",
+    key_placeholder: "Ingresa la clave aquí...",
+    confirm_btn: "VALIDAR CLAVE",
+    key_info: "🔑 Clave disponible en el Discord ZNK",
+    valid_key: "✅ ¡Clave válida! Cargando...",
+    invalid_key: "❌ Clave inválida. Verifica e intenta de nuevo.",
+    locked_msg: "🔒 Demasiados intentos. Espera 30s.",
+    tab_player: "Jugador",
+    tab_combat: "Combate",
+    tab_world: "Mundo",
+    tab_visual: "Visual",
+    tab_misc: "Misc",
+    speed_hack: "Speed Hack",
+    fly_hack: "Fly Hack",
+    noclip: "NoClip",
+    inf_jump: "Salto Infinito",
+    teleport: "Teletransporte",
+    aimbot: "Aimbot",
+    silent_aim: "Silent Aim",
+    esp_box: "ESP Cajas",
+    esp_names: "ESP Nombres",
+    no_recoil: "Sin Retroceso",
+    inf_ammo: "Munición Infinita",
+    speed_bullet: "Balas Rápidas",
+    fullbright: "Fullbright",
+    no_fog: "Sin Niebla",
+    time_day: "Día",
+    time_night: "Noche",
+    weather: "Clima",
+    xray: "X-Ray",
+    tracers: "Trazadores",
+    wallhack: "Wallhack",
+    chams: "Chams",
+    crosshair: "Mira",
+    anti_afk: "Anti-AFK",
+    auto_farm: "Auto-Farm",
+    inf_money: "Dinero Infinito",
+    god_mode: "Modo Dios",
+    credits: "Créditos",
+    section_movement: "Movimiento",
+    section_utility: "Utilidad",
+    section_aim: "Apuntado",
+    section_detection: "Detección",
+    section_enemy: "Enemigo",
+    section_env: "Entorno",
+    section_time: "Tiempo",
+    section_enemy_vis: "Enemigos",
+    section_ui: "Interfaz",
+    section_game: "Juego",
+    section_other: "Otro",
+    speed_label: "Velocidad",
+    fov_label: "FOV Aimbot",
+  },
+  zh: {
+    hub_title: "ZNK HUB BEST CHEAT",
+    hub_subtitle: "高级作弊界面",
+    key_title: "ZNK HUB — 身份验证",
+    key_sub: "输入您的访问密钥以继续",
+    key_label: "访问密钥",
+    key_placeholder: "在此输入密钥...",
+    confirm_btn: "验证密钥",
+    key_info: "🔑 密钥可在 ZNK Discord 获取",
+    valid_key: "✅ 密钥有效！加载中...",
+    invalid_key: "❌ 密钥无效。请检查后重试。",
+    locked_msg: "🔒 尝试次数过多。请等待30秒。",
+    tab_player: "玩家",
+    tab_combat: "战斗",
+    tab_world: "世界",
+    tab_visual: "视觉",
+    tab_misc: "其他",
+    speed_hack: "速度黑客",
+    fly_hack: "飞行黑客",
+    noclip: "穿墙",
+    inf_jump: "无限跳跃",
+    teleport: "传送",
+    aimbot: "自动瞄准",
+    silent_aim: "静默瞄准",
+    esp_box: "ESP 方框",
+    esp_names: "ESP 名称",
+    no_recoil: "无后坐力",
+    inf_ammo: "无限弹药",
+    speed_bullet: "子弹加速",
+    fullbright: "全亮",
+    no_fog: "无雾",
+    time_day: "白天",
+    time_night: "夜晚",
+    weather: "天气",
+    xray: "透视",
+    tracers: "追踪线",
+    wallhack: "穿墙透视",
+    chams: "染色",
+    crosshair: "准星",
+    anti_afk: "防挂机",
+    auto_farm: "自动农场",
+    inf_money: "无限金钱",
+    god_mode: "无敌模式",
+    credits: "制作人员",
+    section_movement: "移动",
+    section_utility: "实用",
+    section_aim: "瞄准",
+    section_detection: "检测",
+    section_enemy: "敌人",
+    section_env: "环境",
+    section_time: "时间",
+    section_enemy_vis: "敌人",
+    section_ui: "界面",
+    section_game: "游戏",
+    section_other: "其他",
+    speed_label: "速度",
+    fov_label: "自动瞄准FOV",
+  },
+  ja: {
+    hub_title: "ZNK HUB BEST CHEAT",
+    hub_subtitle: "高度なチートインターフェース",
+    key_title: "ZNK HUB — 認証",
+    key_sub: "続行するにはアクセスキーを入力してください",
+    key_label: "アクセスキー",
+    key_placeholder: "ここにキーを入力...",
+    confirm_btn: "キーを確認する",
+    key_info: "🔑 キーはZNK Discordで入手できます",
+    valid_key: "✅ 有効なキー！読み込み中...",
+    invalid_key: "❌ 無効なキー。確認して再試行してください。",
+    locked_msg: "🔒 試行回数が多すぎます。30秒待ってください。",
+    tab_player: "プレイヤー",
+    tab_combat: "戦闘",
+    tab_world: "ワールド",
+    tab_visual: "ビジュアル",
+    tab_misc: "その他",
+    speed_hack: "スピードハック",
+    fly_hack: "フライハック",
+    noclip: "ノークリップ",
+    inf_jump: "無限ジャンプ",
+    teleport: "テレポート",
+    aimbot: "エイムボット",
+    silent_aim: "サイレントエイム",
+    esp_box: "ESPボックス",
+    esp_names: "ESP名前",
+    no_recoil: "リコイルなし",
+    inf_ammo: "無限弾薬",
+    speed_bullet: "高速弾丸",
+    fullbright: "フルブライト",
+    no_fog: "霧なし",
+    time_day: "昼",
+    time_night: "夜",
+    weather: "天気",
+    xray: "X線",
+    tracers: "トレーサー",
+    wallhack: "ウォールハック",
+    chams: "チャムズ",
+    crosshair: "クロスヘア",
+    anti_afk: "アンチAFK",
+    auto_farm: "オートファーム",
+    inf_money: "無限マネー",
+    god_mode: "ゴッドモード",
+    credits: "クレジット",
+    section_movement: "移動",
+    section_utility: "ユーティリティ",
+    section_aim: "エイム",
+    section_detection: "検出",
+    section_enemy: "敵",
+    section_env: "環境",
+    section_time: "時間",
+    section_enemy_vis: "敵",
+    section_ui: "インターフェース",
+    section_game: "ゲーム",
+    section_other: "その他",
+    speed_label: "スピード",
+    fov_label: "エイムボットFOV",
+  },
+};
+
+// ─── Toggle Component ─────────────────────────────────────────────────────────
+function Toggle({
+  label,
+  enabled,
+  onToggle,
+  color = "blue",
+}: {
+  label: string;
+  enabled: boolean;
+  onToggle: () => void;
+  color?: string;
+}) {
+  const colorMap: Record<string, string> = {
+    blue: "bg-blue-500",
+    red: "bg-red-500",
+    green: "bg-green-500",
+    purple: "bg-purple-500",
+    yellow: "bg-yellow-400",
+    cyan: "bg-cyan-500",
+    orange: "bg-orange-500",
+    pink: "bg-pink-500",
+  };
+  const activeColor = colorMap[color] || "bg-blue-500";
+
+  return (
+    <div
+      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer group transition-all duration-150"
+      style={{
+        background: enabled
+          ? "rgba(30,100,255,0.12)"
+          : "rgba(14,20,40,0.6)",
+        border: enabled
+          ? "1px solid rgba(30,100,255,0.4)"
+          : "1px solid rgba(30,70,140,0.3)",
+      }}
+      onClick={onToggle}
+    >
+      <span
+        className="text-sm font-semibold select-none"
+        style={{ color: enabled ? "#a0c4ff" : "#607090" }}
+      >
+        {label}
+      </span>
+      <div
+        className={`relative w-10 h-5 rounded-full transition-all duration-200 ${
+          enabled ? activeColor : "bg-gray-700"
+        }`}
+      >
+        <div
+          className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${
+            enabled ? "left-5" : "left-0.5"
+          }`}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Slider Component ─────────────────────────────────────────────────────────
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div
+      className="px-3 py-2 rounded-lg"
+      style={{ border: "1px solid rgba(30,70,140,0.3)", background: "rgba(14,20,40,0.6)" }}
+    >
+      <div className="flex justify-between mb-1">
+        <span className="text-xs font-bold" style={{ color: "#607090" }}>
+          {label}
+        </span>
+        <span className="text-xs font-bold" style={{ color: "#4080ff" }}>
+          {value}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+        style={{
+          background: `linear-gradient(to right, #1e64ff ${((value - min) / (max - min)) * 100}%, #1e3060 ${((value - min) / (max - min)) * 100}%)`,
+        }}
+      />
+    </div>
+  );
+}
+
+// ─── Section Header ───────────────────────────────────────────────────────────
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-2 mt-3 mb-1">
+      <div className="h-px flex-1" style={{ background: "rgba(30,80,200,0.3)" }} />
+      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#2a5ad4" }}>
+        {title}
+      </span>
+      <div className="h-px flex-1" style={{ background: "rgba(30,80,200,0.3)" }} />
+    </div>
+  );
+}
+
+// ─── Color Bar ────────────────────────────────────────────────────────────────
+function ColorBar({ colors }: { colors: string[] }) {
+  return (
+    <div className="flex w-full h-1 rounded-full overflow-hidden mt-1">
+      {colors.map((c, i) => (
+        <div key={i} className="flex-1" style={{ backgroundColor: c }} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Language Dropdown ────────────────────────────────────────────────────────
+function LangSelector({
+  lang,
+  setLang,
+}: {
+  lang: string;
+  setLang: (l: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const current = LANGS.find((l) => l.code === lang) || LANGS[0];
+
+  return (
+    <div className="relative select-none z-50">
+      <button
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 hover:scale-105 active:scale-95"
+        style={{
+          background: "rgba(30,100,255,0.18)",
+          border: "1px solid rgba(30,100,255,0.4)",
+          color: "#a0c4ff",
+        }}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span>{current.label}</span>
+        <svg
+          className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          className="absolute right-0 mt-1 rounded-xl overflow-hidden shadow-2xl z-50"
+          style={{
+            background: "rgba(8,14,30,0.97)",
+            border: "1px solid rgba(30,100,255,0.35)",
+            minWidth: "110px",
+          }}
+        >
+          {LANGS.map((l) => (
+            <button
+              key={l.code}
+              className="w-full text-left px-3 py-1.5 text-xs font-semibold transition-all duration-100"
+              style={{
+                color: lang === l.code ? "#4da6ff" : "#607090",
+                background: lang === l.code ? "rgba(30,100,255,0.15)" : "transparent",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(30,100,255,0.1)";
+                (e.currentTarget as HTMLElement).style.color = "#a0c4ff";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background =
+                  lang === l.code ? "rgba(30,100,255,0.15)" : "transparent";
+                (e.currentTarget as HTMLElement).style.color =
+                  lang === l.code ? "#4da6ff" : "#607090";
+              }}
+              onClick={() => {
+                setLang(l.code);
+                setOpen(false);
+              }}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Key Screen ───────────────────────────────────────────────────────────────
+const VALID_KEYS = ["ZNK-2024-ELITE", "ZNK-AMI1-2024", "ZNK-AMI2-2024", "znkxvanouille"];
+
+function KeyScreen({
+  onUnlock,
+  t,
+  lang,
+  setLang,
+}: {
+  onUnlock: () => void;
+  t: Record<string, string>;
+  lang: string;
+  setLang: (l: string) => void;
+}) {
+  const [key, setKey] = useState("");
+  const [status, setStatus] = useState("");
+  const [statusColor, setStatusColor] = useState("#ff4444");
+  const [attempts, setAttempts] = useState(0);
+  const [locked, setLocked] = useState(false);
+
+  const handleValidate = () => {
+    if (locked) return;
+    if (VALID_KEYS.includes(key.trim())) {
+      setStatus(t.valid_key);
+      setStatusColor("#44ff88");
+      setTimeout(onUnlock, 1200);
+    } else {
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      if (newAttempts >= 3) {
+        setStatus(t.locked_msg);
+        setStatusColor("#ff9900");
+        setLocked(true);
+        setTimeout(() => {
+          setLocked(false);
+          setAttempts(0);
+          setStatus("");
+        }, 30000);
+      } else {
+        setStatus(t.invalid_key);
+        setStatusColor("#ff4444");
+      }
+    }
+  };
+
+  return (
+    <div
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      style={{ background: "rgb(0,5,15)" }}
+    >
+      {/* Scanlines */}
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div
+          key={i}
+          className="absolute w-full"
+          style={{
+            height: "1px",
+            top: `${(i / 7) * 100}%`,
+            background: "rgba(30,100,255,0.25)",
+            pointerEvents: "none",
+          }}
+        />
+      ))}
+
+      {/* Glow orbs */}
+      <div
+        className="absolute"
+        style={{
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(30,100,255,0.12) 0%, transparent 70%)",
+          top: "-100px",
+          left: "-100px",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          width: 300,
+          height: 300,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(30,100,255,0.08) 0%, transparent 70%)",
+          bottom: "-80px",
+          right: "-80px",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Language selector top-right */}
+      <div className="absolute top-4 right-4 z-50">
+        <LangSelector lang={lang} setLang={setLang} />
+      </div>
+
+      {/* Key Frame */}
+      <div
+        className="relative z-10 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl"
+        style={{
+          background: "rgb(8,12,22)",
+          border: "2px solid rgba(30,100,255,0.6)",
+          boxShadow: "0 0 40px rgba(30,100,255,0.2), 0 0 80px rgba(30,100,255,0.08)",
+        }}
+      >
+        {/* Color bar at very top */}
+        <ColorBar
+          colors={["#1e64ff", "#3d8bff", "#5ba3ff", "#3d8bff", "#1e64ff", "#0a2a8f", "#1e64ff"]}
+        />
+
+        {/* Title bar */}
+        <div
+          className="relative px-5 py-3.5 flex items-center gap-3"
+          style={{
+            background: "linear-gradient(135deg, rgb(10,30,120) 0%, rgb(30,100,255) 100%)",
+          }}
+        >
+          <span className="text-2xl">💎</span>
+          <div>
+            <div className="text-white font-black text-base leading-tight">{t.key_title}</div>
+            <div className="text-blue-200 text-xs font-medium">{t.key_sub}</div>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-6 flex flex-col items-center gap-4">
+          <div className="text-5xl">🔐</div>
+
+          <div className="w-full">
+            <label
+              className="block text-xs font-black mb-1.5 tracking-widest"
+              style={{ color: "#4080ff" }}
+            >
+              {t.key_label}
+            </label>
+            <div
+              className="rounded-xl overflow-hidden"
+              style={{
+                background: "rgb(14,20,40)",
+                border: "1.5px solid rgba(30,70,160,0.6)",
+              }}
+            >
+              <input
+                type="text"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleValidate()}
+                placeholder={t.key_placeholder}
+                className="w-full px-4 py-3 text-sm font-bold bg-transparent outline-none"
+                style={{
+                  color: "#c8dcff",
+                  caretColor: "#4080ff",
+                }}
+              />
+            </div>
+          </div>
+
+          {status && (
+            <p className="w-full text-xs font-bold text-left" style={{ color: statusColor }}>
+              {status}
+            </p>
+          )}
+
+          <button
+            onClick={handleValidate}
+            disabled={locked}
+            className="w-full py-3 rounded-xl font-black text-sm text-white transition-all duration-150 active:scale-95 disabled:opacity-50"
+            style={{
+              background: locked
+                ? "rgba(20,40,100,0.5)"
+                : "linear-gradient(135deg, rgb(15,50,160) 0%, rgb(40,120,255) 100%)",
+              boxShadow: locked ? "none" : "0 4px 20px rgba(30,100,255,0.35)",
+            }}
+          >
+            {t.confirm_btn}
+          </button>
+
+          <p className="text-xs font-semibold" style={{ color: "#4a6aaa" }}>
+            {t.key_info}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Hub ─────────────────────────────────────────────────────────────────
+const TABS = [
+  { key: "player", icon: "🏃", tKey: "tab_player" },
+  { key: "combat", icon: "⚔️", tKey: "tab_combat" },
+  { key: "world", icon: "🌍", tKey: "tab_world" },
+  { key: "visual", icon: "👁️", tKey: "tab_visual" },
+  { key: "misc", icon: "⚙️", tKey: "tab_misc" },
+];
+
+const TAB_COLORS: Record<string, string[]> = {
+  player: ["#1e64ff", "#2878ff", "#3d8bff", "#2878ff", "#1e64ff"],
+  combat: ["#ff2222", "#ff4444", "#ff6666", "#ff4444", "#ff2222"],
+  world: ["#22cc66", "#33dd77", "#44ee88", "#33dd77", "#22cc66"],
+  visual: ["#aa44ff", "#bb55ff", "#cc66ff", "#bb55ff", "#aa44ff"],
+  misc: ["#ff9900", "#ffaa22", "#ffbb44", "#ffaa22", "#ff9900"],
+};
+
+type Toggles = Record<string, boolean>;
+type Sliders = Record<string, number>;
+
+export default function App() {
+  const [lang, setLang] = useState("fr");
+  const [unlocked, setUnlocked] = useState(false);
+  const [activeTab, setActiveTab] = useState("player");
+  const t = T[lang] || T.fr;
+
+  const [toggles, setToggles] = useState<Toggles>({
+    speed_hack: false,
+    fly_hack: false,
+    noclip: false,
+    inf_jump: false,
+    teleport: false,
+    aimbot: false,
+    silent_aim: false,
+    esp_box: false,
+    esp_names: false,
+    no_recoil: false,
+    inf_ammo: false,
+    speed_bullet: false,
+    fullbright: false,
+    no_fog: false,
+    xray: false,
+    tracers: false,
+    wallhack: false,
+    chams: false,
+    crosshair: false,
+    anti_afk: false,
+    auto_farm: false,
+    inf_money: false,
+    god_mode: false,
+  });
+
+  const [sliders, setSliders] = useState<Sliders>({
+    speed: 16,
+    fov: 90,
+  });
+
+  const toggle = (key: string) =>
+    setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
+  const setSlider = (key: string, val: number) =>
+    setSliders((prev) => ({ ...prev, [key]: val }));
+
+  if (!unlocked) {
+    return (
+      <KeyScreen
+        onUnlock={() => setUnlocked(true)}
+        t={t}
+        lang={lang}
+        setLang={setLang}
+      />
+    );
+  }
+
+  // ─ Tab content ──────────────────────────────────────────────────────────────
+  const renderContent = () => {
+    switch (activeTab) {
+      case "player":
+        return (
+          <>
+            <SectionHeader title={t.section_movement} />
+            <Toggle label={t.speed_hack} enabled={toggles.speed_hack} onToggle={() => toggle("speed_hack")} color="blue" />
+            <Slider label={t.speed_label} value={sliders.speed} min={1} max={100} onChange={(v) => setSlider("speed", v)} />
+            <Toggle label={t.fly_hack} enabled={toggles.fly_hack} onToggle={() => toggle("fly_hack")} color="cyan" />
+            <Toggle label={t.noclip} enabled={toggles.noclip} onToggle={() => toggle("noclip")} color="purple" />
+            <Toggle label={t.inf_jump} enabled={toggles.inf_jump} onToggle={() => toggle("inf_jump")} color="green" />
+            <SectionHeader title={t.section_utility} />
+            <Toggle label={t.teleport} enabled={toggles.teleport} onToggle={() => toggle("teleport")} color="orange" />
+            <Toggle label={t.god_mode} enabled={toggles.god_mode} onToggle={() => toggle("god_mode")} color="yellow" />
+          </>
+        );
+      case "combat":
+        return (
+          <>
+            <SectionHeader title={t.section_aim} />
+            <Toggle label={t.aimbot} enabled={toggles.aimbot} onToggle={() => toggle("aimbot")} color="red" />
+            <Slider label={t.fov_label} value={sliders.fov} min={10} max={360} onChange={(v) => setSlider("fov", v)} />
+            <Toggle label={t.silent_aim} enabled={toggles.silent_aim} onToggle={() => toggle("silent_aim")} color="red" />
+            <SectionHeader title={t.section_enemy} />
+            <Toggle label={t.no_recoil} enabled={toggles.no_recoil} onToggle={() => toggle("no_recoil")} color="orange" />
+            <Toggle label={t.inf_ammo} enabled={toggles.inf_ammo} onToggle={() => toggle("inf_ammo")} color="pink" />
+            <Toggle label={t.speed_bullet} enabled={toggles.speed_bullet} onToggle={() => toggle("speed_bullet")} color="red" />
+          </>
+        );
+      case "world":
+        return (
+          <>
+            <SectionHeader title={t.section_env} />
+            <Toggle label={t.fullbright} enabled={toggles.fullbright} onToggle={() => toggle("fullbright")} color="yellow" />
+            <Toggle label={t.no_fog} enabled={toggles.no_fog} onToggle={() => toggle("no_fog")} color="green" />
+            <SectionHeader title={t.section_time} />
+            <Toggle label={t.time_day} enabled={toggles.time_day} onToggle={() => toggle("time_day")} color="yellow" />
+            <Toggle label={t.time_night} enabled={toggles.time_night} onToggle={() => toggle("time_night")} color="purple" />
+            <SectionHeader title={t.section_other} />
+            <Toggle label={t.weather} enabled={toggles.weather} onToggle={() => toggle("weather")} color="cyan" />
+          </>
+        );
+      case "visual":
+        return (
+          <>
+            <SectionHeader title={t.section_detection} />
+            <Toggle label={t.esp_box} enabled={toggles.esp_box} onToggle={() => toggle("esp_box")} color="purple" />
+            <Toggle label={t.esp_names} enabled={toggles.esp_names} onToggle={() => toggle("esp_names")} color="purple" />
+            <Toggle label={t.xray} enabled={toggles.xray} onToggle={() => toggle("xray")} color="cyan" />
+            <SectionHeader title={t.section_enemy_vis} />
+            <Toggle label={t.tracers} enabled={toggles.tracers} onToggle={() => toggle("tracers")} color="pink" />
+            <Toggle label={t.wallhack} enabled={toggles.wallhack} onToggle={() => toggle("wallhack")} color="purple" />
+            <Toggle label={t.chams} enabled={toggles.chams} onToggle={() => toggle("chams")} color="pink" />
+            <SectionHeader title={t.section_ui} />
+            <Toggle label={t.crosshair} enabled={toggles.crosshair} onToggle={() => toggle("crosshair")} color="blue" />
+          </>
+        );
+      case "misc":
+        return (
+          <>
+            <SectionHeader title={t.section_game} />
+            <Toggle label={t.anti_afk} enabled={toggles.anti_afk} onToggle={() => toggle("anti_afk")} color="green" />
+            <Toggle label={t.auto_farm} enabled={toggles.auto_farm} onToggle={() => toggle("auto_farm")} color="orange" />
+            <Toggle label={t.inf_money} enabled={toggles.inf_money} onToggle={() => toggle("inf_money")} color="yellow" />
+            <SectionHeader title={t.section_other} />
+            <div
+              className="rounded-xl p-4 text-center"
+              style={{ background: "rgba(14,20,40,0.6)", border: "1px solid rgba(30,70,140,0.3)" }}
+            >
+              <div className="text-3xl mb-2">💎</div>
+              <p className="text-xs font-black text-blue-300">ZNK HUB BEST CHEAT</p>
+              <p className="text-xs font-semibold mt-1" style={{ color: "#4a6090" }}>
+                v4.0 ULTIMATE
+              </p>
+              <p className="text-xs mt-2" style={{ color: "#354060" }}>
+                discord.gg/znkhub
+              </p>
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      style={{ background: "rgb(0,5,15)" }}
+    >
+      {/* Background scanlines */}
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div
+          key={i}
+          className="absolute w-full pointer-events-none"
+          style={{
+            height: "1px",
+            top: `${(i / 7) * 100}%`,
+            background: "rgba(30,100,255,0.15)",
+          }}
+        />
+      ))}
+
+      {/* Glow orbs */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: 500,
+          height: 500,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(30,100,255,0.1) 0%, transparent 70%)",
+          top: "-150px",
+          left: "-150px",
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(30,100,255,0.07) 0%, transparent 70%)",
+          bottom: "-100px",
+          right: "-100px",
+        }}
+      />
+
+      {/* Hub Window */}
+      <div
+        className="relative z-10 flex flex-col rounded-2xl overflow-hidden shadow-2xl w-full"
+        style={{
+          maxWidth: 520,
+          background: "rgb(8,12,22)",
+          border: "2px solid rgba(30,100,255,0.5)",
+          boxShadow: "0 0 60px rgba(30,100,255,0.2), 0 0 120px rgba(30,100,255,0.07)",
+        }}
+      >
+        {/* Color bar - top accent */}
+        <ColorBar colors={TAB_COLORS[activeTab]} />
+
+        {/* Title bar */}
+        <div
+          className="relative flex items-center justify-between px-4 py-3"
+          style={{
+            background: "linear-gradient(135deg, rgb(10,30,120) 0%, rgb(25,85,220) 100%)",
+            borderBottom: "1px solid rgba(30,100,255,0.3)",
+          }}
+        >
+          {/* Left: icon + version */}
+          <div className="flex items-center gap-2 min-w-[60px]">
+            <span className="text-xl">💎</span>
+            <span className="text-xs font-bold" style={{ color: "rgba(160,196,255,0.7)" }}>
+              v4.0
+            </span>
+          </div>
+
+          {/* Center: ZNK HUB BEST CHEAT */}
+          <div className="absolute left-1/2 -translate-x-1/2 text-center">
+            <h1 className="text-white font-black text-sm leading-none tracking-wide">
+              ZNK HUB BEST CHEAT
+            </h1>
+            <p className="text-blue-300 text-xs font-medium opacity-80 mt-0.5">
+              {t.hub_subtitle}
+            </p>
+          </div>
+
+          {/* Right: Lang selector */}
+          <div className="min-w-[60px] flex justify-end">
+            <LangSelector lang={lang} setLang={setLang} />
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div
+          className="flex border-b"
+          style={{ borderColor: "rgba(30,70,140,0.4)", background: "rgba(8,14,28,0.8)" }}
+        >
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className="flex-1 py-2.5 flex flex-col items-center gap-0.5 transition-all duration-150 relative"
+                style={{
+                  color: isActive ? "#a0c4ff" : "#405070",
+                  background: isActive ? "rgba(30,100,255,0.12)" : "transparent",
+                }}
+              >
+                <span className="text-base leading-none">{tab.icon}</span>
+                <span className="text-xs font-bold">{t[tab.tKey]}</span>
+                {isActive && (
+                  <div
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ background: "linear-gradient(90deg, transparent, #1e64ff, transparent)" }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        <div
+          className="flex flex-col gap-2 px-4 py-4 overflow-y-auto"
+          style={{
+            minHeight: 340,
+            maxHeight: 420,
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(30,100,255,0.4) transparent",
+          }}
+        >
+          {renderContent()}
+        </div>
+
+        {/* Bottom color bar */}
+        <ColorBar colors={TAB_COLORS[activeTab]} />
+
+        {/* Footer */}
+        <div
+          className="flex items-center justify-center py-2 gap-2"
+          style={{ background: "rgba(5,10,20,0.9)", borderTop: "1px solid rgba(30,70,140,0.2)" }}
+        >
+          <div
+            className="w-2 h-2 rounded-full animate-pulse"
+            style={{ background: "#1e64ff" }}
+          />
+          <span className="text-xs font-bold" style={{ color: "#2a4a80" }}>
+            ZNK HUB BEST CHEAT • discord.gg/znkhub
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
