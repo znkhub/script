@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZNK HUB BEST CHEAT</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:rgb(0,5,15);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  .scanline{position:fixed;width:100%;height:1px;background:rgba(30,100,255,0.18);pointer-events:none;z-index:0}
+  .glow{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+  .glow-tl{width:500px;height:500px;top:-150px;left:-150px;background:radial-gradient(circle,rgba(30,100,255,0.13) 0%,transparent 70%)}
+  .glow-br{width:400px;height:400px;bottom:-100px;right:-100px;background:radial-gradient(circle,rgba(30,100,255,0.09) 0%,transparent 70%)}
+  #key-screen{position:relative;z-index:10;width:100%;max-width:440px;padding:16px}
+  .key-card{background:rgb(8,12,22);border:2px solid rgba(30,100,255,0.55);border-radius:18px;overflow:hidden;box-shadow:0 0 50px rgba(30,100,255,0.22),0 0 100px rgba(30,100,255,0.08)}
+  .key-topbar{background:linear-gradient(135deg,rgb(10,30,120) 0%,rgb(30,100,255) 100%);padding:14px 20px;display:flex;align-items:center;gap:12px}
+  .key-topbar .icon{font-size:24px}
+  .key-topbar .ttl{color:#fff;font-weight:900;font-size:15px;line-height:1.2}
+  .key-topbar .sub{color:rgba(160,210,255,0.85);font-size:11px;font-weight:600;margin-top:2px}
+  .key-body{padding:24px 24px 20px}
+  .lock-icon{text-align:center;font-size:44px;margin-bottom:16px}
+  .field-label{font-size:10px;font-weight:900;color:#3d7fff;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .input-wrap{background:rgb(14,20,40);border:1.5px solid rgba(30,70,160,0.6);border-radius:10px;overflow:hidden;transition:border-color .2s}
+  .input-wrap:focus-within{border-color:rgba(30,120,255,0.9)}
+  .input-wrap input{width:100%;background:transparent;border:none;outline:none;padding:12px 14px;color:#c8dcff;font-size:13px;font-weight:700;font-family:inherit;caret-color:#4080ff}
+  .input-wrap input::placeholder{color:rgba(90,120,180,0.7)}
+  .status-msg{min-height:18px;font-size:12px;font-weight:700;margin:10px 0 0}
+  .confirm-btn{width:100%;margin-top:14px;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,rgb(15,50,160) 0%,rgb(40,120,255) 100%);color:#fff;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:.5px;box-shadow:0 4px 22px rgba(30,100,255,0.38);transition:transform .12s,box-shadow .12s}
+  .confirm-btn:hover{transform:scale(1.02);box-shadow:0 6px 28px rgba(30,100,255,0.5)}
+  .confirm-btn:active{transform:scale(0.97)}
+  .confirm-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;background:rgba(20,40,100,0.5)}
+  .key-footer{text-align:center;font-size:11px;font-weight:600;color:#3a5888;margin-top:12px}
+  .lang-wrap{position:absolute;top:14px;right:14px;z-index:999}
+  .lang-btn{display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid rgba(30,100,255,0.45);background:rgba(30,100,255,0.16);border-radius:8px;color:#a0c4ff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s}
+  .lang-btn:hover{transform:scale(1.05)}
+  .lang-btn svg{transition:transform .2s}
+  .lang-btn.open svg{transform:rotate(180deg)}
+  .lang-dropdown{position:absolute;right:0;top:calc(100% + 4px);background:rgba(7,12,28,0.98);border:1px solid rgba(30,100,255,0.35);border-radius:12px;overflow:hidden;min-width:110px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
+  .lang-dropdown button{width:100%;text-align:left;padding:7px 12px;border:none;background:transparent;color:#5a7090;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .1s,color .1s}
+  .lang-dropdown button:hover,.lang-dropdown button.active{background:rgba(30,100,255,0.14);color:#a0c4ff}
+  .lang-dropdown button.active{color:#4da6ff}
+  .color-bar{display:flex;height:4px;width:100%}
+  .color-bar span{flex:1}
+  #hub-screen{display:none;position:relative;z-index:10;width:100%;max-width:520px;padding:16px}
+  .hub-card{background:rgb(8,12,22);border:2px solid rgba(30,100,255,0.48);border-radius:18px;overflow:hidden;box-shadow:0 0 60px rgba(30,100,255,0.2),0 0 130px rgba(30,100,255,0.07)}
+  .hub-titlebar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:linear-gradient(135deg,rgb(10,30,120) 0%,rgb(22,80,210) 100%);border-bottom:1px solid rgba(30,100,255,0.28)}
+  .hub-titlebar .left{display:flex;align-items:center;gap:7px;min-width:60px}
+  .hub-titlebar .left .ico{font-size:20px}
+  .hub-titlebar .left .ver{font-size:10px;font-weight:700;color:rgba(160,196,255,0.7)}
+  .hub-titlebar .center{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none}
+  .hub-titlebar .center h1{color:#fff;font-size:13px;font-weight:900;letter-spacing:.5px;line-height:1}
+  .hub-titlebar .center p{color:#93c4ff;font-size:10px;font-weight:600;margin-top:3px;opacity:.85}
+  .hub-titlebar .right{min-width:60px;display:flex;justify-content:flex-end}
+  .tabs{display:flex;border-bottom:1px solid rgba(30,70,140,0.4);background:rgba(7,13,27,0.8)}
+  .tab-btn{flex:1;padding:9px 2px 8px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;transition:background .15s,color .15s;font-family:inherit}
+  .tab-btn .t-ico{font-size:15px;line-height:1}
+  .tab-btn .t-lbl{font-size:10px;font-weight:700;letter-spacing:.2px}
+  .tab-btn.active{background:rgba(30,100,255,0.12)}
+  .tab-btn.active .t-lbl{color:#a0c4ff}
+  .tab-btn:not(.active) .t-lbl{color:#405070}
+  .tab-btn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#1e64ff,transparent)}
+  .hub-content{padding:14px 16px;min-height:330px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:rgba(30,100,255,0.4) transparent}
+  .hub-content::-webkit-scrollbar{width:4px}
+  .hub-content::-webkit-scrollbar-thumb{background:rgba(30,100,255,0.4);border-radius:4px}
+  .sec-head{display:flex;align-items:center;gap:8px;margin:4px 0 0}
+  .sec-head .line{flex:1;height:1px;background:rgba(30,80,200,0.28)}
+  .sec-head span{font-size:9px;font-weight:900;color:#1e4db5;letter-spacing:2.5px;text-transform:uppercase;white-space:nowrap}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:9px;cursor:pointer;border:1px solid rgba(30,70,140,0.3);background:rgba(14,20,40,0.6);transition:background .15s,border-color .15s}
+  .toggle-row:hover{border-color:rgba(30,100,255,0.25);background:rgba(14,20,50,0.8)}
+  .toggle-row.on{background:rgba(30,100,255,0.11);border-color:rgba(30,100,255,0.38)}
+  .toggle-row .lbl{font-size:13px;font-weight:700;user-select:none;color:#607090;transition:color .15s}
+  .toggle-row.on .lbl{color:#a0c4ff}
+  .switch{width:38px;height:20px;border-radius:10px;background:#374151;position:relative;transition:background .2s;flex-shrink:0}
+  .switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);transition:left .2s}
+  .toggle-row.on .switch{background:#3b82f6}
+  .toggle-row.on.red .switch{background:#ef4444}
+  .toggle-row.on.green .switch{background:#22c55e}
+  .toggle-row.on.purple .switch{background:#a855f7}
+  .toggle-row.on.yellow .switch{background:#eab308}
+  .toggle-row.on.cyan .switch{background:#06b6d4}
+  .toggle-row.on.orange .switch{background:#f97316}
+  .toggle-row.on.pink .switch{background:#ec4899}
+  .toggle-row.on .switch::after{left:20px}
+  .slider-row{padding:9px 12px;border-radius:9px;border:1px solid rgba(30,70,140,0.3);background:rgba(14,20,40,0.6)}
+  .slider-top{display:flex;justify-content:space-between;margin-bottom:7px}
+  .slider-top .s-lbl{font-size:10px;font-weight:700;color:#506070}
+  .slider-top .s-val{font-size:10px;font-weight:700;color:#3d7fff}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:4px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:#1e64ff;cursor:pointer;border:2px solid rgba(255,255,255,0.85);box-shadow:0 0 6px rgba(30,100,255,0.65)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#1e64ff;cursor:pointer;border:2px solid rgba(255,255,255,0.85);box-shadow:0 0 6px rgba(30,100,255,0.65)}
+  .credits-card{border-radius:12px;padding:18px;text-align:center;background:rgba(14,20,40,0.6);border:1px solid rgba(30,70,140,0.3)}
+  .credits-card .c-ico{font-size:30px;margin-bottom:8px}
+  .credits-card .c-name{font-size:12px;font-weight:900;color:#6da9ff}
+  .credits-card .c-ver{font-size:11px;font-weight:600;color:#384a6a;margin-top:4px}
+  .credits-card .c-disc{font-size:11px;color:#2a3850;margin-top:6px}
+  .hub-footer{display:flex;align-items:center;justify-content:center;gap:7px;padding:7px;background:rgba(4,8,18,0.92);border-top:1px solid rgba(30,70,140,0.18)}
+  .hub-footer .dot{width:7px;height:7px;border-radius:50%;background:#1e64ff;animation:pulse 2s infinite}
+  .hub-footer span{font-size:10px;font-weight:700;color:#243a60}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  @media(max-width:480px){#key-screen,#hub-screen{padding:8px}.hub-titlebar .center h1{font-size:11px}}
+</style>
+</head>
+<body>
+
+<div class="scanline" style="top:14.28%"></div>
+<div class="scanline" style="top:28.57%"></div>
+<div class="scanline" style="top:42.85%"></div>
+<div class="scanline" style="top:57.14%"></div>
+<div class="scanline" style="top:71.42%"></div>
+<div class="scanline" style="top:85.71%"></div>
+<div class="glow glow-tl"></div>
+<div class="glow glow-br"></div>
+
+<div id="key-screen">
+  <div class="lang-wrap" id="key-lang-wrap">
+    <button class="lang-btn" id="key-lang-btn" onclick="toggleLangMenu('key')">
+      <span id="key-lang-label">🇫🇷 FR</span>
+      <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+    <div class="lang-dropdown" id="key-lang-dropdown" style="display:none"></div>
+  </div>
+  <div class="key-card">
+    <div class="color-bar" id="key-colorbar"></div>
+    <div class="key-topbar">
+      <span class="icon">💎</span>
+      <div><div class="ttl" id="k-title"></div><div class="sub" id="k-sub"></div></div>
+    </div>
+    <div class="key-body">
+      <div class="lock-icon">🔐</div>
+      <div class="field-label" id="k-label"></div>
+      <div class="input-wrap"><input type="text" id="key-input" autocomplete="off" spellcheck="false"/></div>
+      <div class="status-msg" id="k-status"></div>
+      <button class="confirm-btn" id="k-confirm" onclick="validateKey()"></button>
+      <div class="key-footer" id="k-info"></div>
+    </div>
+  </div>
+</div>
+
+<div id="hub-screen">
+  <div class="hub-card">
+    <div class="color-bar" id="hub-colorbar-top"></div>
+    <div class="hub-titlebar">
+      <div class="left"><span class="ico">💎</span><span class="ver">v4.0</span></div>
+      <div class="center"><h1>ZNK HUB BEST CHEAT</h1><p id="hub-subtitle"></p></div>
+      <div class="right">
+        <div style="position:relative">
+          <button class="lang-btn" id="hub-lang-btn" onclick="toggleLangMenu('hub')">
+            <span id="hub-lang-label">🇫🇷 FR</span>
+            <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="lang-dropdown" id="hub-lang-dropdown" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs" id="tabs-row"></div>
+    <div class="hub-content" id="hub-content"></div>
+    <div class="color-bar" id="hub-colorbar-bot"></div>
+    <div class="hub-footer"><div class="dot"></div><span>ZNK HUB BEST CHEAT • discord.gg/znkhub</span></div>
+  </div>
+</div>
+
+<script>
+const LANGS=[{code:'fr',label:'🇫🇷 FR'},{code:'en',label:'🇬🇧 EN'},{code:'es',label:'🇪🇸 ES'},{code:'zh',label:'🇨🇳 ZH'},{code:'ja',label:'🇯🇵 JP'}];
+const T={
+  fr:{hub_subtitle:'Interface de triche avancée',key_title:'ZNK HUB — Authentification',key_sub:"Entrez votre clé d'accès pour continuer",key_label:"CLÉ D'ACCÈS",key_placeholder:'Entrez la key ici...',confirm_btn:'VALIDER LA CLÉ',key_info:'🔑 Key disponible sur le Discord ZNK',valid_key:'✅ Clé valide ! Chargement...',invalid_key:'❌ Clé invalide. Vérifiez et réessayez.',locked_msg:'🔒 Trop de tentatives. Attendez 30s.',tab_player:'Joueur',tab_combat:'Combat',tab_world:'Monde',tab_visual:'Visuel',tab_misc:'Divers',speed_hack:'Speed Hack',fly_hack:'Fly Hack',noclip:'NoClip',inf_jump:'Saut Infini',teleport:'Téléportation',aimbot:'Aimbot',silent_aim:'Silent Aim',esp_box:'ESP Boîtes',esp_names:'ESP Noms',no_recoil:'Pas de Recul',inf_ammo:'Munitions Infinies',speed_bullet:'Balles Rapides',fullbright:'Fullbright',no_fog:'Pas de Brouillard',time_day:'Jour',time_night:'Nuit',weather:'Météo',xray:'X-Ray',tracers:'Traceurs',wallhack:'Wallhack',chams:'Chams',crosshair:'Crosshair',anti_afk:'Anti-AFK',auto_farm:'Auto-Farm',inf_money:'Argent Infini',god_mode:'God Mode',sec_movement:'Mouvement',sec_utility:'Utilitaire',sec_aim:'Visée',sec_detection:'Détection',sec_enemy:'Ennemi',sec_env:'Environnement',sec_time:'Temps',sec_enemy_vis:'Ennemis',sec_ui:'Interface',sec_game:'Jeu',sec_other:'Autre',speed_label:'Vitesse',fov_label:'FOV Aimbot'},
+  en:{hub_subtitle:'Advanced cheat interface',key_title:'ZNK HUB — Authentication',key_sub:'Enter your access key to continue',key_label:'ACCESS KEY',key_placeholder:'Enter key here...',confirm_btn:'VALIDATE KEY',key_info:'🔑 Key available on ZNK Discord',valid_key:'✅ Valid key! Loading...',invalid_key:'❌ Invalid key. Check and retry.',locked_msg:'🔒 Too many attempts. Wait 30s.',tab_player:'Player',tab_combat:'Combat',tab_world:'World',tab_visual:'Visual',tab_misc:'Misc',speed_hack:'Speed Hack',fly_hack:'Fly Hack',noclip:'NoClip',inf_jump:'Infinite Jump',teleport:'Teleport',aimbot:'Aimbot',silent_aim:'Silent Aim',esp_box:'ESP Boxes',esp_names:'ESP Names',no_recoil:'No Recoil',inf_ammo:'Infinite Ammo',speed_bullet:'Speed Bullets',fullbright:'Fullbright',no_fog:'No Fog',time_day:'Day',time_night:'Night',weather:'Weather',xray:'X-Ray',tracers:'Tracers',wallhack:'Wallhack',chams:'Chams',crosshair:'Crosshair',anti_afk:'Anti-AFK',auto_farm:'Auto-Farm',inf_money:'Infinite Money',god_mode:'God Mode',sec_movement:'Movement',sec_utility:'Utility',sec_aim:'Aim',sec_detection:'Detection',sec_enemy:'Enemy',sec_env:'Environment',sec_time:'Time',sec_enemy_vis:'Enemies',sec_ui:'Interface',sec_game:'Game',sec_other:'Other',speed_label:'Speed',fov_label:'Aimbot FOV'},
+  es:{hub_subtitle:'Interfaz de trampa avanzada',key_title:'ZNK HUB — Autenticación',key_sub:'Ingresa tu clave de acceso para continuar',key_label:'CLAVE DE ACCESO',key_placeholder:'Ingresa la clave aquí...',confirm_btn:'VALIDAR CLAVE',key_info:'🔑 Clave disponible en el Discord ZNK',valid_key:'✅ ¡Clave válida! Cargando...',invalid_key:'❌ Clave inválida. Verifica e intenta de nuevo.',locked_msg:'🔒 Demasiados intentos. Espera 30s.',tab_player:'Jugador',tab_combat:'Combate',tab_world:'Mundo',tab_visual:'Visual',tab_misc:'Misc',speed_hack:'Speed Hack',fly_hack:'Fly Hack',noclip:'NoClip',inf_jump:'Salto Infinito',teleport:'Teletransporte',aimbot:'Aimbot',silent_aim:'Silent Aim',esp_box:'ESP Cajas',esp_names:'ESP Nombres',no_recoil:'Sin Retroceso',inf_ammo:'Munición Infinita',speed_bullet:'Balas Rápidas',fullbright:'Fullbright',no_fog:'Sin Niebla',time_day:'Día',time_night:'Noche',weather:'Clima',xray:'X-Ray',tracers:'Trazadores',wallhack:'Wallhack',chams:'Chams',crosshair:'Mira',anti_afk:'Anti-AFK',auto_farm:'Auto-Farm',inf_money:'Dinero Infinito',god_mode:'Modo Dios',sec_movement:'Movimiento',sec_utility:'Utilidad',sec_aim:'Apuntado',sec_detection:'Detección',sec_enemy:'Enemigo',sec_env:'Entorno',sec_time:'Tiempo',sec_enemy_vis:'Enemigos',sec_ui:'Interfaz',sec_game:'Juego',sec_other:'Otro',speed_label:'Velocidad',fov_label:'FOV Aimbot'},
+  zh:{hub_subtitle:'高级作弊界面',key_title:'ZNK HUB — 身份验证',key_sub:'输入您的访问密钥以继续',key_label:'访问密钥',key_placeholder:'在此输入密钥...',confirm_btn:'验证密钥',key_info:'🔑 密钥可在 ZNK Discord 获取',valid_key:'✅ 密钥有效！加载中...',invalid_key:'❌ 密钥无效。请检查后重试。',locked_msg:'🔒 尝试次数过多。请等待30秒。',tab_player:'玩家',tab_combat:'战斗',tab_world:'世界',tab_visual:'视觉',tab_misc:'其他',speed_hack:'速度黑客',fly_hack:'飞行黑客',noclip:'穿墙',inf_jump:'无限跳跃',teleport:'传送',aimbot:'自动瞄准',silent_aim:'静默瞄准',esp_box:'ESP方框',esp_names:'ESP名称',no_recoil:'无后坐力',inf_ammo:'无限弹药',speed_bullet:'子弹加速',fullbright:'全亮',no_fog:'无雾',time_day:'白天',time_night:'夜晚',weather:'天气',xray:'透视',tracers:'追踪线',wallhack:'穿墙透视',chams:'染色',crosshair:'准星',anti_afk:'防挂机',auto_farm:'自动农场',inf_money:'无限金钱',god_mode:'无敌模式',sec_movement:'移动',sec_utility:'实用',sec_aim:'瞄准',sec_detection:'检测',sec_enemy:'敌人',sec_env:'环境',sec_time:'时间',sec_enemy_vis:'敌人',sec_ui:'界面',sec_game:'游戏',sec_other:'其他',speed_label:'速度',fov_label:'自动瞄准FOV'},
+  ja:{hub_subtitle:'高度なチートインターフェース',key_title:'ZNK HUB — 認証',key_sub:'続行するにはアクセスキーを入力してください',key_label:'アクセスキー',key_placeholder:'ここにキーを入力...',confirm_btn:'キーを確認する',key_info:'🔑 キーはZNK Discordで入手できます',valid_key:'✅ 有効なキー！読み込み中...',invalid_key:'❌ 無効なキー。確認して再試行してください。',locked_msg:'🔒 試行回数が多すぎます。30秒待ってください。',tab_player:'プレイヤー',tab_combat:'戦闘',tab_world:'ワールド',tab_visual:'ビジュアル',tab_misc:'その他',speed_hack:'スピードハック',fly_hack:'フライハック',noclip:'ノークリップ',inf_jump:'無限ジャンプ',teleport:'テレポート',aimbot:'エイムボット',silent_aim:'サイレントエイム',esp_box:'ESPボックス',esp_names:'ESP名前',no_recoil:'リコイルなし',inf_ammo:'無限弾薬',speed_bullet:'高速弾丸',fullbright:'フルブライト',no_fog:'霧なし',time_day:'昼',time_night:'夜',weather:'天気',xray:'X線',tracers:'トレーサー',wallhack:'ウォールハック',chams:'チャムズ',crosshair:'クロスヘア',anti_afk:'アンチAFK',auto_farm:'オートファーム',inf_money:'無限マネー',god_mode:'ゴッドモード',sec_movement:'移動',sec_utility:'ユーティリティ',sec_aim:'エイム',sec_detection:'検出',sec_enemy:'敵',sec_env:'環境',sec_time:'時間',sec_enemy_vis:'敵',sec_ui:'インターフェース',sec_game:'ゲーム',sec_other:'その他',speed_label:'スピード',fov_label:'エイムボットFOV'},
+};
+let lang='fr',activeTab='player',keyAttempts=0,keyLocked=false;
+const VALID_KEYS=['ZNK-2024-ELITE','ZNK-AMI1-2024','ZNK-AMI2-2024','znkxvanouille'];
+const toggles={speed_hack:0,fly_hack:0,noclip:0,inf_jump:0,teleport:0,aimbot:0,silent_aim:0,esp_box:0,esp_names:0,no_recoil:0,inf_ammo:0,speed_bullet:0,fullbright:0,no_fog:0,time_day:0,time_night:0,weather:0,xray:0,tracers:0,wallhack:0,chams:0,crosshair:0,anti_afk:0,auto_farm:0,inf_money:0,god_mode:0};
+const sliders={speed:16,fov:90};
+const TABS=[{key:'player',icon:'🏃',lbl:'tab_player'},{key:'combat',icon:'⚔️',lbl:'tab_combat'},{key:'world',icon:'🌍',lbl:'tab_world'},{key:'visual',icon:'👁️',lbl:'tab_visual'},{key:'misc',icon:'⚙️',lbl:'tab_misc'}];
+const TAB_COLORS={player:['#1e64ff','#2878ff','#4090ff','#2878ff','#1e64ff'],combat:['#ff2222','#ff4444','#ff6666','#ff4444','#ff2222'],world:['#22cc66','#33dd77','#44ee88','#33dd77','#22cc66'],visual:['#aa44ff','#bb55ff','#cc66ff','#bb55ff','#aa44ff'],misc:['#ff9900','#ffaa22','#ffbb44','#ffaa22','#ff9900']};
+const t=()=>T[lang]||T.fr;
+function setColorBar(id,colors){document.getElementById(id).innerHTML=colors.map(c=>`<span style="flex:1;background:${c}"></span>`).join('')}
+function buildLangDropdown(which){document.getElementById(which+'-lang-dropdown').innerHTML=LANGS.map(l=>`<button class="${l.code===lang?'active':''}" onclick="selectLang('${which}','${l.code}')">${l.label}</button>`).join('')}
+function toggleLangMenu(which){const btn=document.getElementById(which+'-lang-btn');const dd=document.getElementById(which+'-lang-dropdown');const open=dd.style.display==='none';document.querySelectorAll('.lang-dropdown').forEach(d=>d.style.display='none');document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('open'));if(open){buildLangDropdown(which);dd.style.display='block';btn.classList.add('open')}}
+function selectLang(which,code){lang=code;document.querySelectorAll('.lang-dropdown').forEach(d=>d.style.display='none');document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('open'));const lbl=LANGS.find(l=>l.code===code).label;document.getElementById('key-lang-label').textContent=lbl;document.getElementById('hub-lang-label').textContent=lbl;renderKeyScreen();renderHub()}
+document.addEventListener('click',e=>{if(!e.target.closest('.lang-btn')&&!e.target.closest('.lang-dropdown')){document.querySelectorAll('.lang-dropdown').forEach(d=>d.style.display='none');document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('open'))}});
+function renderKeyScreen(){const tr=t();document.getElementById('k-title').textContent=tr.key_title;document.getElementById('k-sub').textContent=tr.key_sub;document.getElementById('k-label').textContent=tr.key_label;document.getElementById('key-input').placeholder=tr.key_placeholder;document.getElementById('k-confirm').textContent=tr.confirm_btn;document.getElementById('k-info').textContent=tr.key_info;setColorBar('key-colorbar',['#1e64ff','#3d8bff','#5ba3ff','#3d8bff','#1e64ff','#0a2a8f','#1e64ff'])}
+function setStatus(msg,color){const el=document.getElementById('k-status');el.textContent=msg;el.style.color=color}
+function validateKey(){if(keyLocked)return;const val=document.getElementById('key-input').value.trim();if(VALID_KEYS.includes(val)){setStatus(t().valid_key,'#44ff88');document.getElementById('k-confirm').disabled=true;setTimeout(showHub,1200)}else{keyAttempts++;if(keyAttempts>=3){setStatus(t().locked_msg,'#ff9900');keyLocked=true;document.getElementById('k-confirm').disabled=true;setTimeout(()=>{keyLocked=false;keyAttempts=0;document.getElementById('k-confirm').disabled=false;setStatus('','#ff4444')},30000)}else{setStatus(t().invalid_key,'#ff4444')}}}
+document.getElementById('key-input').addEventListener('keydown',e=>{if(e.key==='Enter')validateKey()});
+function showHub(){document.getElementById('key-screen').style.display='none';document.getElementById('hub-screen').style.display='block';renderHub()}
+function renderHub(){const tr=t();document.getElementById('hub-subtitle').textContent=tr.hub_subtitle;document.getElementById('tabs-row').innerHTML=TABS.map(tab=>`<button class="tab-btn${activeTab===tab.key?' active':''}" onclick="setTab('${tab.key}')"><span class="t-ico">${tab.icon}</span><span class="t-lbl">${tr[tab.lbl]}</span></button>`).join('');renderContent(tr);const cols=TAB_COLORS[activeTab];setColorBar('hub-colorbar-top',cols);setColorBar('hub-colorbar-bot',cols)}
+function setTab(key){activeTab=key;renderHub()}
+function toggleHTML(key,label,color=''){const on=toggles[key];return`<div class="toggle-row${on?' on':''} ${color}" onclick="doToggle('${key}')"><span class="lbl">${label}</span><div class="switch"></div></div>`}
+function doToggle(key){toggles[key]=toggles[key]?0:1;renderHub()}
+function sliderHTML(key,label,min,max){const val=sliders[key];const pct=((val-min)/(max-min))*100;return`<div class="slider-row"><div class="slider-top"><span class="s-lbl">${label}</span><span class="s-val" id="sv-${key}">${val}</span></div><input type="range" min="${min}" max="${max}" value="${val}" style="background:linear-gradient(to right,#1e64ff ${pct}%,#1a2d60 ${pct}%)" oninput="doSlider('${key}',this)"/></div>`}
+function doSlider(key,el){sliders[key]=parseInt(el.value);const pct=((sliders[key]-parseInt(el.min))/(parseInt(el.max)-parseInt(el.min)))*100;el.style.background=`linear-gradient(to right,#1e64ff ${pct}%,#1a2d60 ${pct}%)`;const sv=document.getElementById('sv-'+key);if(sv)sv.textContent=sliders[key]}
+function secHTML(label){return`<div class="sec-head"><div class="line"></div><span>${label}</span><div class="line"></div></div>`}
+function creditsHTML(){return`<div class="credits-card"><div class="c-ico">💎</div><div class="c-name">ZNK HUB BEST CHEAT</div><div class="c-ver">v4.0 ULTIMATE</div><div class="c-disc">discord.gg/znkhub</div></div>`}
+function renderContent(tr){let h='';switch(activeTab){case'player':h+=secHTML(tr.sec_movement)+toggleHTML('speed_hack',tr.speed_hack,'blue')+sliderHTML('speed',tr.speed_label,1,100)+toggleHTML('fly_hack',tr.fly_hack,'cyan')+toggleHTML('noclip',tr.noclip,'purple')+toggleHTML('inf_jump',tr.inf_jump,'green')+secHTML(tr.sec_utility)+toggleHTML('teleport',tr.teleport,'orange')+toggleHTML('god_mode',tr.god_mode,'yellow');break;case'combat':h+=secHTML(tr.sec_aim)+toggleHTML('aimbot',tr.aimbot,'red')+sliderHTML('fov',tr.fov_label,10,360)+toggleHTML('silent_aim',tr.silent_aim,'red')+secHTML(tr.sec_enemy)+toggleHTML('no_recoil',tr.no_recoil,'orange')+toggleHTML('inf_ammo',tr.inf_ammo,'pink')+toggleHTML('speed_bullet',tr.speed_bullet,'red');break;case'world':h+=secHTML(tr.sec_env)+toggleHTML('fullbright',tr.fullbright,'yellow')+toggleHTML('no_fog',tr.no_fog,'green')+secHTML(tr.sec_time)+toggleHTML('time_day',tr.time_day,'yellow')+toggleHTML('time_night',tr.time_night,'purple')+secHTML(tr.sec_other)+toggleHTML('weather',tr.weather,'cyan');break;case'visual':h+=secHTML(tr.sec_detection)+toggleHTML('esp_box',tr.esp_box,'purple')+toggleHTML('esp_names',tr.esp_names,'purple')+toggleHTML('xray',tr.xray,'cyan')+secHTML(tr.sec_enemy_vis)+toggleHTML('tracers',tr.tracers,'pink')+toggleHTML('wallhack',tr.wallhack,'purple')+toggleHTML('chams',tr.chams,'pink')+secHTML(tr.sec_ui)+toggleHTML('crosshair',tr.crosshair,'blue');break;case'misc':h+=secHTML(tr.sec_game)+toggleHTML('anti_afk',tr.anti_afk,'green')+toggleHTML('auto_farm',tr.auto_farm,'orange')+toggleHTML('inf_money',tr.inf_money,'yellow')+secHTML(tr.sec_other)+creditsHTML();break}document.getElementById('hub-content').innerHTML=h}
+renderKeyScreen();
+</script>
+</body>
+</html>
