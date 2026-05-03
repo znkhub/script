@@ -1,0 +1,1756 @@
+-- 💎 ZNK HUB — Système de Key Refait + Interface Admin
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootpart = character:WaitForChild("HumanoidRootPart")
+
+-- ========================================
+-- SYSTÈME DE KEY — REFAIT COMPLET
+-- ========================================
+
+local VALID_KEYS = {
+    ["ZNK-2024-ELITE"]  = true,
+    ["ZNK-AMI1-2024"]   = true,
+    ["ZNK-AMI2-2024"]   = true,
+    ["znkxvanouille"]   = true,
+}
+
+local ADMIN_CODE = "znkxvanouille"
+local KEY_FILE   = "znk_key.txt"
+
+-- Lire la key sauvegardée
+local function getSavedKey()
+    if isfile and isfile(KEY_FILE) then
+        local ok, content = pcall(readfile, KEY_FILE)
+        if ok then return content end
+    end
+    return nil
+end
+
+-- Vérifier si une key est valide
+local function isKeyValid(key)
+    return VALID_KEYS[key] == true
+end
+
+-- Sauvegarder la key
+local function saveKey(key)
+    pcall(writefile, KEY_FILE, key)
+end
+
+-- Vérification initiale
+local saved = getSavedKey()
+local keyVerified = saved and isKeyValid(saved)
+
+-- ========================================
+-- INTERFACE DE KEY (si pas vérifié)
+-- ========================================
+
+if not keyVerified then
+
+    local KeyGui = Instance.new("ScreenGui")
+    KeyGui.Name = "ZNKKeyGui"
+    KeyGui.ResetOnSpawn = false
+    KeyGui.DisplayOrder = 999999999
+    pcall(function()
+        if gethui then KeyGui.Parent = gethui()
+        else KeyGui.Parent = CoreGui end
+    end)
+
+    -- Overlay sombre
+    local Overlay = Instance.new("Frame", KeyGui)
+    Overlay.Size = UDim2.new(1,0,1,0)
+    Overlay.BackgroundColor3 = Color3.fromRGB(0,5,15)
+    Overlay.BackgroundTransparency = 0.35
+    Overlay.BorderSizePixel = 0
+
+    -- Lignes déco
+    for i = 1, 5 do
+        local L = Instance.new("Frame", Overlay)
+        L.Size = UDim2.new(1,0,0,1)
+        L.Position = UDim2.new(0,0,i/6,0)
+        L.BackgroundColor3 = Color3.fromRGB(30,100,255)
+        L.BackgroundTransparency = 0.75
+        L.BorderSizePixel = 0
+    end
+
+    -- Fenêtre principale
+    local KFrame = Instance.new("Frame", Overlay)
+    KFrame.Size = UDim2.new(0,420,0,300)
+    KFrame.Position = UDim2.new(0.5,-210,0.5,-150)
+    KFrame.BackgroundColor3 = Color3.fromRGB(8,12,22)
+    KFrame.BorderSizePixel = 0
+    Instance.new("UICorner", KFrame).CornerRadius = UDim.new(0,14)
+    local KStroke = Instance.new("UIStroke", KFrame)
+    KStroke.Color = Color3.fromRGB(30,100,255)
+    KStroke.Thickness = 2.5
+
+    -- Barre titre
+    local KTBar = Instance.new("Frame", KFrame)
+    KTBar.Size = UDim2.new(1,0,0,50)
+    KTBar.BackgroundColor3 = Color3.fromRGB(15,45,140)
+    KTBar.BorderSizePixel = 0
+    Instance.new("UICorner", KTBar).CornerRadius = UDim.new(0,14)
+    local KFix = Instance.new("Frame", KTBar)
+    KFix.Size = UDim2.new(1,0,0,22)
+    KFix.Position = UDim2.new(0,0,1,-22)
+    KFix.BackgroundColor3 = Color3.fromRGB(15,45,140)
+    KFix.BorderSizePixel = 0
+    local KGrad = Instance.new("UIGradient", KTBar)
+    KGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(10,30,120)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30,100,255))
+    })
+    KGrad.Rotation = 90
+
+    local KIco = Instance.new("TextLabel", KTBar)
+    KIco.Size = UDim2.new(0,36,1,0)
+    KIco.Position = UDim2.new(0,10,0,0)
+    KIco.BackgroundTransparency = 1
+    KIco.Text = "💎"
+    KIco.Font = Enum.Font.GothamBold
+    KIco.TextSize = 24
+    KIco.TextColor3 = Color3.fromRGB(255,255,255)
+
+    local KTitle = Instance.new("TextLabel", KTBar)
+    KTitle.Size = UDim2.new(1,-55,0,26)
+    KTitle.Position = UDim2.new(0,50,0,4)
+    KTitle.BackgroundTransparency = 1
+    KTitle.Text = "ZNK HUB — Authentification"
+    KTitle.Font = Enum.Font.GothamBold
+    KTitle.TextSize = 16
+    KTitle.TextColor3 = Color3.fromRGB(255,255,255)
+    KTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    local KSub = Instance.new("TextLabel", KTBar)
+    KSub.Size = UDim2.new(1,-55,0,14)
+    KSub.Position = UDim2.new(0,50,0,30)
+    KSub.BackgroundTransparency = 1
+    KSub.Text = "Entrez votre clé d'accès"
+    KSub.Font = Enum.Font.Gotham
+    KSub.TextSize = 11
+    KSub.TextColor3 = Color3.fromRGB(160,195,255)
+    KSub.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Icone lock
+    local LockLbl = Instance.new("TextLabel", KFrame)
+    LockLbl.Size = UDim2.new(1,0,0,46)
+    LockLbl.Position = UDim2.new(0,0,0,56)
+    LockLbl.BackgroundTransparency = 1
+    LockLbl.Text = "🔐"
+    LockLbl.Font = Enum.Font.GothamBold
+    LockLbl.TextSize = 36
+    LockLbl.TextColor3 = Color3.fromRGB(30,120,255)
+
+    -- Label "CLÉ D'ACCÈS"
+    local FieldLbl = Instance.new("TextLabel", KFrame)
+    FieldLbl.Size = UDim2.new(1,-40,0,18)
+    FieldLbl.Position = UDim2.new(0,20,0,108)
+    FieldLbl.BackgroundTransparency = 1
+    FieldLbl.Text = "CLÉ D'ACCÈS"
+    FieldLbl.Font = Enum.Font.GothamBold
+    FieldLbl.TextSize = 11
+    FieldLbl.TextColor3 = Color3.fromRGB(80,140,255)
+    FieldLbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Champ de saisie
+    local InputBG = Instance.new("Frame", KFrame)
+    InputBG.Size = UDim2.new(1,-40,0,40)
+    InputBG.Position = UDim2.new(0,20,0,128)
+    InputBG.BackgroundColor3 = Color3.fromRGB(14,20,40)
+    InputBG.BorderSizePixel = 0
+    Instance.new("UICorner", InputBG).CornerRadius = UDim.new(0,8)
+    local IStroke = Instance.new("UIStroke", InputBG)
+    IStroke.Color = Color3.fromRGB(30,70,160)
+    IStroke.Thickness = 1.5
+
+    local KeyInput = Instance.new("TextBox", InputBG)
+    KeyInput.Size = UDim2.new(1,-16,1,0)
+    KeyInput.Position = UDim2.new(0,8,0,0)
+    KeyInput.BackgroundTransparency = 1
+    KeyInput.PlaceholderText = "Entrez la clé ici..."
+    KeyInput.PlaceholderColor3 = Color3.fromRGB(70,90,130)
+    KeyInput.Text = ""
+    KeyInput.Font = Enum.Font.GothamBold
+    KeyInput.TextSize = 14
+    KeyInput.TextColor3 = Color3.fromRGB(200,220,255)
+    KeyInput.ClearTextOnFocus = false
+
+    KeyInput.Focused:Connect(function()
+        TweenService:Create(IStroke, TweenInfo.new(0.18), {Color=Color3.fromRGB(30,120,255), Thickness=2}):Play()
+    end)
+    KeyInput.FocusLost:Connect(function()
+        TweenService:Create(IStroke, TweenInfo.new(0.18), {Color=Color3.fromRGB(30,70,160), Thickness=1.5}):Play()
+    end)
+
+    -- Message statut
+    local StatusLbl = Instance.new("TextLabel", KFrame)
+    StatusLbl.Size = UDim2.new(1,-40,0,18)
+    StatusLbl.Position = UDim2.new(0,20,0,174)
+    StatusLbl.BackgroundTransparency = 1
+    StatusLbl.Text = ""
+    StatusLbl.Font = Enum.Font.GothamBold
+    StatusLbl.TextSize = 12
+    StatusLbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Bouton Valider
+    local ConfirmBtn = Instance.new("TextButton", KFrame)
+    ConfirmBtn.Size = UDim2.new(1,-40,0,40)
+    ConfirmBtn.Position = UDim2.new(0,20,0,198)
+    ConfirmBtn.BackgroundColor3 = Color3.fromRGB(20,60,180)
+    ConfirmBtn.Text = "VALIDER LA CLÉ"
+    ConfirmBtn.Font = Enum.Font.GothamBold
+    ConfirmBtn.TextSize = 14
+    ConfirmBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    ConfirmBtn.AutoButtonColor = false
+    Instance.new("UICorner", ConfirmBtn).CornerRadius = UDim.new(0,8)
+    local BG = Instance.new("UIGradient", ConfirmBtn)
+    BG.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(15,50,160)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35,110,255))
+    })
+    BG.Rotation = 90
+
+    -- Info discord
+    local InfoLbl = Instance.new("TextLabel", KFrame)
+    InfoLbl.Size = UDim2.new(1,-40,0,16)
+    InfoLbl.Position = UDim2.new(0,20,0,246)
+    InfoLbl.BackgroundTransparency = 1
+    InfoLbl.Text = "🔑 Clé disponible sur le Discord ZNK"
+    InfoLbl.Font = Enum.Font.Gotham
+    InfoLbl.TextSize = 11
+    InfoLbl.TextColor3 = Color3.fromRGB(80,110,170)
+    InfoLbl.TextXAlignment = Enum.TextXAlignment.Center
+
+    -- Logique bouton
+    local attempts = 0
+    local locked = false
+
+    -- Shake helper
+    local function shake()
+        for i = 1, 6 do
+            local ox = (i % 2 == 0) and 8 or -8
+            TweenService:Create(KFrame, TweenInfo.new(0.045), {
+                Position = UDim2.new(0.5,-210+ox,0.5,-150)
+            }):Play()
+            task.wait(0.05)
+        end
+        TweenService:Create(KFrame, TweenInfo.new(0.1), {
+            Position = UDim2.new(0.5,-210,0.5,-150)
+        }):Play()
+    end
+
+    ConfirmBtn.MouseButton1Click:Connect(function()
+        if locked then return end
+        local entered = KeyInput.Text:match("^%s*(.-)%s*$") -- trim
+
+        -- Animation clic
+        TweenService:Create(ConfirmBtn, TweenInfo.new(0.07), {Size=UDim2.new(1,-42,0,38)}):Play()
+        task.wait(0.07)
+        TweenService:Create(ConfirmBtn, TweenInfo.new(0.07), {Size=UDim2.new(1,-40,0,40)}):Play()
+
+        if isKeyValid(entered) then
+            -- Succès
+            StatusLbl.Text = "✅ Clé valide ! Chargement..."
+            StatusLbl.TextColor3 = Color3.fromRGB(50,210,100)
+            KStroke.Color = Color3.fromRGB(50,210,100)
+            IStroke.Color = Color3.fromRGB(50,210,100)
+            ConfirmBtn.BackgroundColor3 = Color3.fromRGB(25,150,70)
+            saveKey(entered)
+            task.wait(1.2)
+            TweenService:Create(KFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+                Size = UDim2.new(0,0,0,0),
+                Position = UDim2.new(0.5,0,0.5,0)
+            }):Play()
+            task.wait(0.45)
+            KeyGui:Destroy()
+            keyVerified = true
+        else
+            -- Échec
+            attempts += 1
+            KStroke.Color = Color3.fromRGB(220,40,40)
+            IStroke.Color = Color3.fromRGB(220,40,40)
+            shake()
+
+            if attempts >= 3 then
+                locked = true
+                StatusLbl.Text = "🚫 Trop de tentatives. Relancez le script."
+                StatusLbl.TextColor3 = Color3.fromRGB(220,40,40)
+                ConfirmBtn.BackgroundColor3 = Color3.fromRGB(80,20,20)
+                ConfirmBtn.Text = "BLOQUÉ"
+                KeyInput.Editable = false
+            else
+                local remaining = 3 - attempts
+                StatusLbl.Text = "❌ Clé incorrecte — " .. remaining .. " essai(s) restant(s)"
+                StatusLbl.TextColor3 = Color3.fromRGB(220,80,80)
+                KeyInput.Text = ""
+                task.delay(0.6, function()
+                    TweenService:Create(KStroke, TweenInfo.new(0.2), {Color=Color3.fromRGB(30,100,255)}):Play()
+                    TweenService:Create(IStroke, TweenInfo.new(0.2), {Color=Color3.fromRGB(30,70,160)}):Play()
+                end)
+            end
+        end
+    end)
+
+    -- Animation d'entrée
+    KFrame.Size = UDim2.new(0,0,0,0)
+    KFrame.Position = UDim2.new(0.5,0,0.5,0)
+    TweenService:Create(KFrame, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0,420,0,300),
+        Position = UDim2.new(0.5,-210,0.5,-150)
+    }):Play()
+
+    -- Attente vérification
+    repeat task.wait(0.1) until keyVerified or not KeyGui.Parent
+    if not keyVerified then return end
+end
+
+-- ========================================
+-- KEY VÉRIFIÉE — LANCEMENT DU HUB
+-- ========================================
+
+local connections = {}
+local highlights = {}
+local lockedTarget = nil
+local isRightClickHeld = false
+local rainbowHue = 0
+local flyConnection = nil
+local fovCircle = nil
+local activeNotifs = 0
+
+local originalValues = {
+    walkSpeed = humanoid.WalkSpeed,
+    jumpPower = humanoid.JumpPower,
+    fov = camera.FieldOfView
+}
+
+local settings = {
+    redESP=false, rainbowESP=false, espTransparency=0.4,
+    espColor=Color3.fromRGB(255,0,0),
+    aimbotLock=false, aimbot=false, autoShoot=false,
+    triggerBot=false, aimbotFOV=200, aimbotSmooth=3,
+    targetPart="Head", showFOV=true,
+    fovColor=Color3.fromRGB(30,120,255),
+    noclip=false, infiniteJump=false, speedEnabled=false,
+    walkSpeed=16, fly=false, flySpeed=50, jumpPower=50,
+    fullbright=false, noFog=false, fovChanger=false,
+    fovValue=70, thirdPerson=false,
+    antiAFK=false, spinbot=false, spinSpeed=10,
+    language="fr",
+}
+
+-- ========================================
+-- NOTIFICATIONS
+-- ========================================
+
+local function notify(title, msg, duration)
+    local ng = Instance.new("ScreenGui")
+    ng.ResetOnSpawn = false
+    ng.DisplayOrder = 999999998
+    pcall(function()
+        if gethui then ng.Parent = gethui() else ng.Parent = CoreGui end
+    end)
+
+    local N = Instance.new("Frame", ng)
+    N.Size = UDim2.new(0,300,0,70)
+    N.Position = UDim2.new(1,320,0,20+activeNotifs*80)
+    N.BackgroundColor3 = Color3.fromRGB(10,15,30)
+    N.BorderSizePixel = 0
+    Instance.new("UICorner", N).CornerRadius = UDim.new(0,10)
+    local ns = Instance.new("UIStroke", N)
+    ns.Color = Color3.fromRGB(30,100,255)
+    ns.Thickness = 2
+
+    local ic = Instance.new("TextLabel", N)
+    ic.Size=UDim2.new(0,38,0,38); ic.Position=UDim2.new(0,10,0.5,-19)
+    ic.BackgroundTransparency=1; ic.Text="💎"
+    ic.Font=Enum.Font.GothamBold; ic.TextSize=26
+    ic.TextColor3=Color3.fromRGB(30,120,255)
+
+    local tl = Instance.new("TextLabel", N)
+    tl.Size=UDim2.new(1,-54,0,22); tl.Position=UDim2.new(0,52,0,12)
+    tl.BackgroundTransparency=1; tl.Text=title
+    tl.Font=Enum.Font.GothamBold; tl.TextSize=14
+    tl.TextColor3=Color3.fromRGB(255,255,255)
+    tl.TextXAlignment=Enum.TextXAlignment.Left
+
+    local ml = Instance.new("TextLabel", N)
+    ml.Size=UDim2.new(1,-54,0,26); ml.Position=UDim2.new(0,52,0,36)
+    ml.BackgroundTransparency=1; ml.Text=msg
+    ml.Font=Enum.Font.Gotham; ml.TextSize=12
+    ml.TextColor3=Color3.fromRGB(180,180,220)
+    ml.TextXAlignment=Enum.TextXAlignment.Left
+    ml.TextWrapped=true
+
+    activeNotifs += 1
+    TweenService:Create(N, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Position = UDim2.new(1,-320,0,20+(activeNotifs-1)*80)
+    }):Play()
+
+    task.delay(duration or 3, function()
+        TweenService:Create(N, TweenInfo.new(0.3), {
+            Position = UDim2.new(1,320,0,20+(activeNotifs-1)*80)
+        }):Play()
+        task.wait(0.35)
+        activeNotifs = math.max(0, activeNotifs-1)
+        ng:Destroy()
+    end)
+end
+
+-- ========================================
+-- CLEANUP
+-- ========================================
+
+local function cleanup()
+    for _, c in pairs(connections) do pcall(function() c:Disconnect() end) end
+    for _, h in pairs(highlights) do pcall(function() h:Destroy() end) end
+    if flyConnection then flyConnection:Disconnect() end
+    connections={}; highlights={}; lockedTarget=nil
+    if humanoid then
+        humanoid.WalkSpeed = originalValues.walkSpeed
+        humanoid.JumpPower = originalValues.jumpPower
+    end
+    camera.FieldOfView = originalValues.fov
+    if fovCircle then pcall(function() fovCircle:Remove() end) end
+end
+
+-- ========================================
+-- GUI PRINCIPAL
+-- ========================================
+
+local MAIN_W = 650
+local MAIN_H = 460
+local SIDEBAR_W = 130
+local TITLEBAR_H = 52
+local PAD = 8
+local CONTENT_X = SIDEBAR_W + PAD * 3
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ZNKHubV6"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.DisplayOrder = 999999
+pcall(function()
+    if gethui then ScreenGui.Parent = gethui()
+    elseif syn and syn.protect_gui then syn.protect_gui(ScreenGui); ScreenGui.Parent = CoreGui
+    else ScreenGui.Parent = CoreGui end
+end)
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0,MAIN_W,0,MAIN_H)
+Main.Position = UDim2.new(0.5,-MAIN_W/2,0.5,-MAIN_H/2)
+Main.BackgroundColor3 = Color3.fromRGB(8,12,22)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+Main.ClipsDescendants = true
+Main.Parent = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,12)
+local MainStroke = Instance.new("UIStroke", Main)
+MainStroke.Color = Color3.fromRGB(30,100,255)
+MainStroke.Thickness = 2.5
+
+-- TitleBar
+local TBar = Instance.new("Frame", Main)
+TBar.Size = UDim2.new(1,0,0,TITLEBAR_H)
+TBar.BackgroundColor3 = Color3.fromRGB(20,60,160)
+TBar.BorderSizePixel = 0
+Instance.new("UICorner", TBar).CornerRadius = UDim.new(0,12)
+local TFix = Instance.new("Frame", TBar)
+TFix.Size = UDim2.new(1,0,0,26)
+TFix.Position = UDim2.new(0,0,1,-26)
+TFix.BackgroundColor3 = Color3.fromRGB(20,60,160)
+TFix.BorderSizePixel = 0
+local TGrad = Instance.new("UIGradient", TBar)
+TGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(10,40,130)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30,100,255))
+})
+TGrad.Rotation = 90
+
+local Logo = Instance.new("TextLabel", TBar)
+Logo.Size=UDim2.new(0,38,1,0); Logo.Position=UDim2.new(0,12,0,0)
+Logo.BackgroundTransparency=1; Logo.Text="💎"
+Logo.Font=Enum.Font.GothamBold; Logo.TextSize=26
+Logo.TextColor3=Color3.fromRGB(255,255,255)
+
+local TitleLbl = Instance.new("TextLabel", TBar)
+TitleLbl.Size=UDim2.new(1,-120,0,28)
+TitleLbl.Position=UDim2.new(0,52,0,4)
+TitleLbl.BackgroundTransparency=1
+TitleLbl.Text="ZNK HUB BEST CHEAT"
+TitleLbl.Font=Enum.Font.GothamBold; TitleLbl.TextSize=20
+TitleLbl.TextColor3=Color3.fromRGB(255,255,255)
+TitleLbl.TextXAlignment=Enum.TextXAlignment.Center
+
+local SubLbl = Instance.new("TextLabel", TBar)
+SubLbl.Size=UDim2.new(1,-120,0,14)
+SubLbl.Position=UDim2.new(0,52,0,34)
+SubLbl.BackgroundTransparency=1
+SubLbl.Text="Ultimate Edition v6.3"
+SubLbl.Font=Enum.Font.Gotham; SubLbl.TextSize=11
+SubLbl.TextColor3=Color3.fromRGB(180,210,255)
+SubLbl.TextXAlignment=Enum.TextXAlignment.Center
+
+local MinBtn = Instance.new("TextButton", TBar)
+MinBtn.Size=UDim2.new(0,30,0,30); MinBtn.Position=UDim2.new(1,-74,0.5,-15)
+MinBtn.BackgroundColor3=Color3.fromRGB(30,80,200); MinBtn.Text="─"
+MinBtn.Font=Enum.Font.GothamBold; MinBtn.TextSize=16
+MinBtn.TextColor3=Color3.fromRGB(255,255,255); MinBtn.AutoButtonColor=false
+Instance.new("UICorner", MinBtn).CornerRadius=UDim.new(0,7)
+
+local CloseBtn = Instance.new("TextButton", TBar)
+CloseBtn.Size=UDim2.new(0,30,0,30); CloseBtn.Position=UDim2.new(1,-40,0.5,-15)
+CloseBtn.BackgroundColor3=Color3.fromRGB(200,40,40); CloseBtn.Text="✕"
+CloseBtn.Font=Enum.Font.GothamBold; CloseBtn.TextSize=14
+CloseBtn.TextColor3=Color3.fromRGB(255,255,255); CloseBtn.AutoButtonColor=false
+Instance.new("UICorner", CloseBtn).CornerRadius=UDim.new(0,7)
+
+-- Sidebar
+local Sidebar = Instance.new("Frame", Main)
+Sidebar.Size=UDim2.new(0,SIDEBAR_W,0,MAIN_H-TITLEBAR_H-PAD*2)
+Sidebar.Position=UDim2.new(0,PAD,0,TITLEBAR_H+PAD)
+Sidebar.BackgroundColor3=Color3.fromRGB(12,18,35)
+Sidebar.BorderSizePixel=0
+Instance.new("UICorner", Sidebar).CornerRadius=UDim.new(0,10)
+local SList = Instance.new("UIListLayout", Sidebar)
+SList.Padding=UDim.new(0,6)
+SList.SortOrder=Enum.SortOrder.LayoutOrder
+SList.HorizontalAlignment=Enum.HorizontalAlignment.Center
+local SPad = Instance.new("UIPadding", Sidebar)
+SPad.PaddingTop=UDim.new(0,10)
+SPad.PaddingLeft=UDim.new(0,6)
+SPad.PaddingRight=UDim.new(0,6)
+
+-- Content
+local CONTENT_W = MAIN_W - CONTENT_X - PAD
+local CONTENT_H = MAIN_H - TITLEBAR_H - PAD*2
+
+local Content = Instance.new("ScrollingFrame", Main)
+Content.Size=UDim2.new(0,CONTENT_W,0,CONTENT_H)
+Content.Position=UDim2.new(0,CONTENT_X,0,TITLEBAR_H+PAD)
+Content.BackgroundColor3=Color3.fromRGB(12,18,35)
+Content.BorderSizePixel=0
+Content.ScrollBarThickness=4
+Content.ScrollBarImageColor3=Color3.fromRGB(30,100,255)
+Content.CanvasSize=UDim2.new(0,0,0,0)
+Instance.new("UICorner", Content).CornerRadius=UDim.new(0,10)
+local CList = Instance.new("UIListLayout", Content)
+CList.Padding=UDim.new(0,8)
+CList.SortOrder=Enum.SortOrder.LayoutOrder
+local CPad = Instance.new("UIPadding", Content)
+CPad.PaddingTop=UDim.new(0,8)
+CPad.PaddingLeft=UDim.new(0,8)
+CPad.PaddingRight=UDim.new(0,8)
+CList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    Content.CanvasSize=UDim2.new(0,0,0,CList.AbsoluteContentSize.Y+16)
+end)
+
+-- ========================================
+-- SYSTÈME D'ONGLETS
+-- ========================================
+
+local tabDefs = {
+    {name="Wallhack", icon="👁", label="Wallhack"},
+    {name="Aimbot",   icon="🎯", label="Aimbot"},
+    {name="Movement", icon="🏃", label="Movement"},
+    {name="Visual",   icon="✨", label="Visual"},
+    {name="Others",   icon="⚙️", label="Others"},
+}
+
+local tabPages = {}
+local tabBtns = {}
+local currentTab = "Wallhack"
+
+for _, t in ipairs(tabDefs) do
+    tabPages[t.name] = {}
+
+    local Btn = Instance.new("TextButton", Sidebar)
+    Btn.Size=UDim2.new(1,0,0,48)
+    Btn.BackgroundColor3=Color3.fromRGB(18,26,52)
+    Btn.Text=""; Btn.AutoButtonColor=false; Btn.BorderSizePixel=0
+    Instance.new("UICorner", Btn).CornerRadius=UDim.new(0,8)
+
+    local BIcon = Instance.new("TextLabel", Btn)
+    BIcon.Size=UDim2.new(1,0,0,22); BIcon.Position=UDim2.new(0,0,0,5)
+    BIcon.BackgroundTransparency=1; BIcon.Text=t.icon
+    BIcon.Font=Enum.Font.GothamBold; BIcon.TextSize=18
+    BIcon.TextColor3=Color3.fromRGB(180,200,255)
+
+    local BLabel = Instance.new("TextLabel", Btn)
+    BLabel.Size=UDim2.new(1,0,0,16); BLabel.Position=UDim2.new(0,0,0,27)
+    BLabel.BackgroundTransparency=1; BLabel.Text=t.label
+    BLabel.Font=Enum.Font.GothamBold; BLabel.TextSize=11
+    BLabel.TextColor3=Color3.fromRGB(160,185,255)
+
+    local ActiveBar = Instance.new("Frame", Btn)
+    ActiveBar.Size=UDim2.new(0,3,0.7,0); ActiveBar.Position=UDim2.new(0,0,0.15,0)
+    ActiveBar.BackgroundColor3=Color3.fromRGB(30,100,255)
+    ActiveBar.BorderSizePixel=0; ActiveBar.Visible=false
+    Instance.new("UICorner", ActiveBar).CornerRadius=UDim.new(1,0)
+
+    tabBtns[t.name] = {btn=Btn, bar=ActiveBar, icon=BIcon, lbl=BLabel}
+
+    Btn.MouseButton1Click:Connect(function()
+        currentTab = t.name
+        for _, page in pairs(tabPages) do
+            for _, elem in pairs(page) do elem.Visible=false end
+        end
+        for _, elem in pairs(tabPages[t.name]) do elem.Visible=true end
+        Content.CanvasPosition=Vector2.new(0,0)
+        for tname, tb in pairs(tabBtns) do
+            local active = (tname==t.name)
+            TweenService:Create(tb.btn, TweenInfo.new(0.2), {
+                BackgroundColor3 = active and Color3.fromRGB(20,50,120) or Color3.fromRGB(18,26,52)
+            }):Play()
+            tb.bar.Visible=active
+            tb.icon.TextColor3 = active and Color3.fromRGB(255,255,255) or Color3.fromRGB(180,200,255)
+            tb.lbl.TextColor3  = active and Color3.fromRGB(30,100,255) or Color3.fromRGB(160,185,255)
+        end
+    end)
+end
+
+-- ========================================
+-- FONCTIONS UI
+-- ========================================
+
+local function createSection(tabName, text)
+    local F = Instance.new("Frame")
+    F.Size=UDim2.new(1,0,0,26)
+    F.BackgroundTransparency=1
+    F.Visible=(tabName==currentTab)
+    F.Parent=Content
+    table.insert(tabPages[tabName], F)
+    local Line = Instance.new("Frame", F)
+    Line.Size=UDim2.new(1,0,0,1); Line.Position=UDim2.new(0,0,1,-1)
+    Line.BackgroundColor3=Color3.fromRGB(30,50,100); Line.BorderSizePixel=0
+    local Lbl = Instance.new("TextLabel", F)
+    Lbl.Size=UDim2.new(1,0,1,0); Lbl.BackgroundTransparency=1
+    Lbl.Text=text; Lbl.Font=Enum.Font.GothamBold; Lbl.TextSize=12
+    Lbl.TextColor3=Color3.fromRGB(80,140,255)
+    Lbl.TextXAlignment=Enum.TextXAlignment.Left
+    return F
+end
+
+local function createToggle(tabName, text, default, callback)
+    local F = Instance.new("Frame")
+    F.Size=UDim2.new(1,0,0,42)
+    F.BackgroundColor3=Color3.fromRGB(15,22,45)
+    F.BorderSizePixel=0
+    F.Visible=(tabName==currentTab)
+    F.Parent=Content
+    Instance.new("UICorner", F).CornerRadius=UDim.new(0,8)
+    table.insert(tabPages[tabName], F)
+
+    local Lbl = Instance.new("TextLabel", F)
+    Lbl.Size=UDim2.new(1,-60,1,0); Lbl.Position=UDim2.new(0,12,0,0)
+    Lbl.BackgroundTransparency=1; Lbl.Text=text
+    Lbl.Font=Enum.Font.GothamBold; Lbl.TextSize=13
+    Lbl.TextColor3=Color3.fromRGB(220,230,255)
+    Lbl.TextXAlignment=Enum.TextXAlignment.Left
+
+    local TB = Instance.new("TextButton", F)
+    TB.Size=UDim2.new(0,44,0,22); TB.Position=UDim2.new(1,-52,0.5,-11)
+    TB.BackgroundColor3=default and Color3.fromRGB(30,100,255) or Color3.fromRGB(35,42,65)
+    TB.Text=""; TB.AutoButtonColor=false
+    Instance.new("UICorner", TB).CornerRadius=UDim.new(1,0)
+
+    local Dot = Instance.new("Frame", TB)
+    Dot.Size=UDim2.new(0,17,0,17)
+    Dot.Position=default and UDim2.new(1,-19,0.5,-8.5) or UDim2.new(0,2,0.5,-8.5)
+    Dot.BackgroundColor3=Color3.fromRGB(255,255,255); Dot.BorderSizePixel=0
+    Instance.new("UICorner", Dot).CornerRadius=UDim.new(1,0)
+
+    local enabled = default
+    TB.MouseButton1Click:Connect(function()
+        enabled=not enabled
+        callback(enabled)
+        TweenService:Create(TB, TweenInfo.new(0.2), {
+            BackgroundColor3=enabled and Color3.fromRGB(30,100,255) or Color3.fromRGB(35,42,65)
+        }):Play()
+        TweenService:Create(Dot, TweenInfo.new(0.2), {
+            Position=enabled and UDim2.new(1,-19,0.5,-8.5) or UDim2.new(0,2,0.5,-8.5)
+        }):Play()
+    end)
+    return F
+end
+
+local function createSlider(tabName, text, min, max, default, suffix, callback)
+    local F = Instance.new("Frame")
+    F.Size=UDim2.new(1,0,0,58)
+    F.BackgroundColor3=Color3.fromRGB(15,22,45)
+    F.BorderSizePixel=0
+    F.Visible=(tabName==currentTab)
+    F.Parent=Content
+    Instance.new("UICorner", F).CornerRadius=UDim.new(0,8)
+    table.insert(tabPages[tabName], F)
+
+    local Lbl = Instance.new("TextLabel", F)
+    Lbl.Size=UDim2.new(0.65,0,0,18); Lbl.Position=UDim2.new(0,12,0,8)
+    Lbl.BackgroundTransparency=1; Lbl.Text=text
+    Lbl.Font=Enum.Font.GothamBold; Lbl.TextSize=13
+    Lbl.TextColor3=Color3.fromRGB(220,230,255)
+    Lbl.TextXAlignment=Enum.TextXAlignment.Left
+
+    local ValBox = Instance.new("TextLabel", F)
+    ValBox.Size=UDim2.new(0,52,0,18); ValBox.Position=UDim2.new(1,-60,0,8)
+    ValBox.BackgroundColor3=Color3.fromRGB(20,35,70)
+    ValBox.Text=tostring(default)..(suffix or "")
+    ValBox.Font=Enum.Font.GothamBold; ValBox.TextSize=11
+    ValBox.TextColor3=Color3.fromRGB(30,100,255)
+    Instance.new("UICorner", ValBox).CornerRadius=UDim.new(0,5)
+
+    local Track = Instance.new("Frame", F)
+    Track.Size=UDim2.new(1,-24,0,5); Track.Position=UDim2.new(0,12,1,-16)
+    Track.BackgroundColor3=Color3.fromRGB(30,40,70); Track.BorderSizePixel=0
+    Instance.new("UICorner", Track).CornerRadius=UDim.new(1,0)
+
+    local Fill = Instance.new("Frame", Track)
+    Fill.Size=UDim2.new((default-min)/(max-min),0,1,0)
+    Fill.BackgroundColor3=Color3.fromRGB(30,100,255); Fill.BorderSizePixel=0
+    Instance.new("UICorner", Fill).CornerRadius=UDim.new(1,0)
+
+    local Thumb = Instance.new("Frame", Track)
+    Thumb.Size=UDim2.new(0,12,0,12)
+    Thumb.Position=UDim2.new((default-min)/(max-min),-6,0.5,-6)
+    Thumb.BackgroundColor3=Color3.fromRGB(180,210,255); Thumb.BorderSizePixel=0
+    Instance.new("UICorner", Thumb).CornerRadius=UDim.new(1,0)
+
+    local dragging=false
+    local function update(val)
+        val=math.clamp(math.floor(val),min,max)
+        local p=(val-min)/(max-min)
+        Fill.Size=UDim2.new(p,0,1,0)
+        Thumb.Position=UDim2.new(p,-6,0.5,-6)
+        ValBox.Text=tostring(val)..(suffix or "")
+        callback(val)
+    end
+
+    Track.InputBegan:Connect(function(inp)
+        if inp.UserInputType==Enum.UserInputType.MouseButton1 then
+            dragging=true
+            update(min+math.clamp((inp.Position.X-Track.AbsolutePosition.X)/Track.AbsoluteSize.X,0,1)*(max-min))
+        end
+    end)
+    Track.InputEnded:Connect(function(inp)
+        if inp.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end
+    end)
+    UserInputService.InputChanged:Connect(function(inp)
+        if dragging and inp.UserInputType==Enum.UserInputType.MouseMovement then
+            update(min+math.clamp((inp.Position.X-Track.AbsolutePosition.X)/Track.AbsoluteSize.X,0,1)*(max-min))
+        end
+    end)
+    return F
+end
+
+local function createButton(tabName, text, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Size=UDim2.new(1,0,0,40)
+    Btn.BackgroundColor3=Color3.fromRGB(20,60,180)
+    Btn.Text=text; Btn.Font=Enum.Font.GothamBold; Btn.TextSize=13
+    Btn.TextColor3=Color3.fromRGB(255,255,255); Btn.AutoButtonColor=false
+    Btn.Visible=(tabName==currentTab)
+    Btn.Parent=Content
+    Instance.new("UICorner", Btn).CornerRadius=UDim.new(0,8)
+    local g=Instance.new("UIGradient", Btn)
+    g.Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(15,50,160)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30,100,255))
+    })
+    g.Rotation=90
+    table.insert(tabPages[tabName], Btn)
+    Btn.MouseButton1Click:Connect(function()
+        TweenService:Create(Btn, TweenInfo.new(0.08), {Size=UDim2.new(1,-2,0,38)}):Play()
+        task.wait(0.08)
+        TweenService:Create(Btn, TweenInfo.new(0.08), {Size=UDim2.new(1,0,0,40)}):Play()
+        callback()
+    end)
+    return Btn
+end
+
+local function createColorPicker(tabName, text, default, callback)
+    local F = Instance.new("Frame")
+    F.Size=UDim2.new(1,0,0,58)
+    F.BackgroundColor3=Color3.fromRGB(15,22,45)
+    F.BorderSizePixel=0
+    F.Visible=(tabName==currentTab)
+    F.Parent=Content
+    Instance.new("UICorner", F).CornerRadius=UDim.new(0,8)
+    table.insert(tabPages[tabName], F)
+
+    local Lbl = Instance.new("TextLabel", F)
+    Lbl.Size=UDim2.new(1,-12,0,18); Lbl.Position=UDim2.new(0,12,0,6)
+    Lbl.BackgroundTransparency=1; Lbl.Text=text
+    Lbl.Font=Enum.Font.GothamBold; Lbl.TextSize=13
+    Lbl.TextColor3=Color3.fromRGB(220,230,255)
+    Lbl.TextXAlignment=Enum.TextXAlignment.Left
+
+    local Preview = Instance.new("Frame", F)
+    Preview.Size=UDim2.new(0,22,0,22); Preview.Position=UDim2.new(1,-32,0,4)
+    Preview.BackgroundColor3=default; Preview.BorderSizePixel=0
+    Instance.new("UICorner", Preview).CornerRadius=UDim.new(0,5)
+    Instance.new("UIStroke", Preview).Color=Color3.fromRGB(80,120,200)
+
+    local extras = {
+        Color3.fromRGB(255,255,255), Color3.fromRGB(200,200,200),
+        Color3.fromRGB(128,128,128), Color3.fromRGB(0,0,0)
+    }
+
+    local BarBG = Instance.new("Frame", F)
+    BarBG.Size=UDim2.new(1,-(12*#extras+36),0,14)
+    BarBG.Position=UDim2.new(0,12,0,34)
+    BarBG.BackgroundColor3=Color3.fromRGB(255,255,255)
+    BarBG.BorderSizePixel=0
+    Instance.new("UICorner", BarBG).CornerRadius=UDim.new(0,4)
+    local RG = Instance.new("UIGradient", BarBG)
+    RG.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0,     Color3.fromHSV(0,1,1)),
+        ColorSequenceKeypoint.new(0.167, Color3.fromHSV(0.167,1,1)),
+        ColorSequenceKeypoint.new(0.333, Color3.fromHSV(0.333,1,1)),
+        ColorSequenceKeypoint.new(0.5,   Color3.fromHSV(0.5,1,1)),
+        ColorSequenceKeypoint.new(0.667, Color3.fromHSV(0.667,1,1)),
+        ColorSequenceKeypoint.new(0.833, Color3.fromHSV(0.833,1,1)),
+        ColorSequenceKeypoint.new(1,     Color3.fromHSV(1,1,1)),
+    })
+
+    local Cursor = Instance.new("Frame", BarBG)
+    Cursor.Size=UDim2.new(0,4,1,4); Cursor.Position=UDim2.new(0,0,0,-2)
+    Cursor.BackgroundColor3=Color3.fromRGB(255,255,255); Cursor.BorderSizePixel=0
+    Instance.new("UICorner", Cursor).CornerRadius=UDim.new(0,3)
+    local CS = Instance.new("UIStroke", Cursor)
+    CS.Color=Color3.fromRGB(0,0,0); CS.Thickness=1
+
+    for i, col in ipairs(extras) do
+        local D = Instance.new("TextButton", F)
+        D.Size=UDim2.new(0,11,0,14)
+        D.Position=UDim2.new(1,-(12*(#extras-i+1)+12),0,36)
+        D.BackgroundColor3=col; D.Text=""; D.AutoButtonColor=false; D.BorderSizePixel=0
+        Instance.new("UICorner", D).CornerRadius=UDim.new(0,3)
+        Instance.new("UIStroke", D).Color=Color3.fromRGB(80,100,160)
+        D.MouseButton1Click:Connect(function()
+            Preview.BackgroundColor3=col; callback(col)
+        end)
+    end
+
+    local barDrag=false
+    local function pickBar(ix)
+        local rx=math.clamp((ix-BarBG.AbsolutePosition.X)/BarBG.AbsoluteSize.X,0,1)
+        local c=Color3.fromHSV(rx,1,1)
+        Cursor.Position=UDim2.new(rx,-2,0,-2)
+        Preview.BackgroundColor3=c; callback(c)
+    end
+    BarBG.InputBegan:Connect(function(inp)
+        if inp.UserInputType==Enum.UserInputType.MouseButton1 then barDrag=true; pickBar(inp.Position.X) end
+    end)
+    BarBG.InputEnded:Connect(function(inp)
+        if inp.UserInputType==Enum.UserInputType.MouseButton1 then barDrag=false end
+    end)
+    UserInputService.InputChanged:Connect(function(inp)
+        if barDrag and inp.UserInputType==Enum.UserInputType.MouseMovement then pickBar(inp.Position.X) end
+    end)
+    return F
+end
+
+-- ========================================
+-- ONGLET 1 — WALLHACK
+-- ========================================
+
+createSection("Wallhack", "ESP — Wallhack")
+
+createToggle("Wallhack","Red ESP",settings.redESP,function(enabled)
+    settings.redESP=enabled
+    if enabled then
+        settings.rainbowESP=false
+        notify("Wallhack","Red ESP activé",2)
+        local function addESP(plr)
+            if plr==player then return end
+            local function onChar(char)
+                task.wait(0.1); if not char then return end
+                if highlights[plr] then pcall(function() highlights[plr]:Destroy() end) end
+                local hl=Instance.new("Highlight"); hl.Adornee=char
+                hl.FillColor=settings.espColor; hl.OutlineColor=settings.espColor
+                hl.FillTransparency=settings.espTransparency; hl.OutlineTransparency=0
+                hl.Parent=char; highlights[plr]=hl
+            end
+            if plr.Character then onChar(plr.Character) end
+            plr.CharacterAdded:Connect(onChar)
+        end
+        for _,p in pairs(Players:GetPlayers()) do addESP(p) end
+        table.insert(connections, Players.PlayerAdded:Connect(addESP))
+    else
+        for _,h in pairs(highlights) do pcall(function() h:Destroy() end) end; highlights={}
+    end
+end)
+
+createToggle("Wallhack","Rainbow ESP",settings.rainbowESP,function(enabled)
+    settings.rainbowESP=enabled
+    if enabled then
+        settings.redESP=false
+        notify("Wallhack","Rainbow ESP activé",2)
+        local function addR(plr)
+            if plr==player then return end
+            local function onChar(char)
+                task.wait(0.1); if not char then return end
+                if highlights[plr] then pcall(function() highlights[plr]:Destroy() end) end
+                local hl=Instance.new("Highlight"); hl.Adornee=char
+                hl.FillColor=Color3.fromHSV(0,1,1); hl.OutlineColor=Color3.fromHSV(0,1,0.8)
+                hl.FillTransparency=settings.espTransparency; hl.OutlineTransparency=0
+                hl.Parent=char; highlights[plr]=hl
+            end
+            if plr.Character then onChar(plr.Character) end
+            plr.CharacterAdded:Connect(onChar)
+        end
+        for _,p in pairs(Players:GetPlayers()) do addR(p) end
+        table.insert(connections, Players.PlayerAdded:Connect(addR))
+        table.insert(connections, RunService.RenderStepped:Connect(function()
+            if settings.rainbowESP then
+                rainbowHue=(rainbowHue+0.005)%1
+                for _,h in pairs(highlights) do
+                    if h and h.Parent then h.FillColor=Color3.fromHSV(rainbowHue,1,1); h.OutlineColor=Color3.fromHSV(rainbowHue,1,0.8) end
+                end
+            end
+        end))
+    else
+        for _,h in pairs(highlights) do pcall(function() h:Destroy() end) end; highlights={}
+    end
+end)
+
+createSlider("Wallhack","Transparence ESP",0,100,settings.espTransparency*100,"%",function(val)
+    settings.espTransparency=val/100
+    for _,h in pairs(highlights) do if h and h.Parent then h.FillTransparency=settings.espTransparency end end
+end)
+
+createColorPicker("Wallhack","Couleur ESP",settings.espColor,function(c)
+    settings.espColor=c
+    if settings.redESP then
+        for _,h in pairs(highlights) do if h and h.Parent then h.FillColor=c; h.OutlineColor=c end end
+    end
+end)
+
+-- ========================================
+-- ONGLET 2 — AIMBOT
+-- ========================================
+
+createSection("Aimbot","Aimbot")
+
+createToggle("Aimbot","Aimbot Lock Only",settings.aimbotLock,function(enabled)
+    settings.aimbotLock=enabled
+    if enabled then
+        settings.aimbot=false
+        notify("Aimbot","Lock mode activé",2)
+        if not fovCircle then
+            fovCircle=Drawing.new("Circle")
+            fovCircle.Visible=true; fovCircle.Thickness=2.5
+            fovCircle.Color=settings.fovColor; fovCircle.Transparency=1
+            fovCircle.NumSides=100; fovCircle.Radius=settings.aimbotFOV; fovCircle.Filled=false
+        end
+    else
+        if fovCircle then fovCircle.Visible=false end; lockedTarget=nil
+    end
+end)
+
+createToggle("Aimbot","Aimbot Lock + Shoot",settings.aimbot,function(enabled)
+    settings.aimbot=enabled
+    if enabled then
+        settings.aimbotLock=false; settings.autoShoot=true
+        notify("Aimbot","Lock + Shoot activé",2)
+        if not fovCircle then
+            fovCircle=Drawing.new("Circle")
+            fovCircle.Visible=true; fovCircle.Thickness=2.5
+            fovCircle.Color=settings.fovColor; fovCircle.Transparency=1
+            fovCircle.NumSides=100; fovCircle.Radius=settings.aimbotFOV; fovCircle.Filled=false
+        end
+    else
+        if fovCircle then fovCircle.Visible=false end; lockedTarget=nil
+    end
+end)
+
+createToggle("Aimbot","Trigger Bot",settings.triggerBot,function(enabled)
+    settings.triggerBot=enabled
+end)
+
+createToggle("Aimbot","Afficher cercle FOV",settings.showFOV,function(enabled)
+    settings.showFOV=enabled
+    if fovCircle then fovCircle.Visible=enabled and (settings.aimbot or settings.aimbotLock) end
+end)
+
+createSlider("Aimbot","Taille FOV",50,600,settings.aimbotFOV,"px",function(val)
+    settings.aimbotFOV=val
+    if fovCircle then fovCircle.Radius=val end
+end)
+
+createSlider("Aimbot","Smoothness",1,20,settings.aimbotSmooth,"",function(val)
+    settings.aimbotSmooth=val
+end)
+
+createColorPicker("Aimbot","Couleur Cercle FOV",settings.fovColor,function(c)
+    settings.fovColor=c
+    if fovCircle then fovCircle.Color=c end
+end)
+
+-- ========================================
+-- ONGLET 3 — MOVEMENT
+-- ========================================
+
+createSection("Movement","Déplacement")
+
+createToggle("Movement","Noclip",settings.noclip,function(enabled)
+    settings.noclip=enabled
+end)
+
+createToggle("Movement","Infinite Jump",settings.infiniteJump,function(enabled)
+    settings.infiniteJump=enabled
+end)
+
+createToggle("Movement","Speed Hack",settings.speedEnabled,function(enabled)
+    settings.speedEnabled=enabled
+    if enabled then humanoid.WalkSpeed=settings.walkSpeed
+    else humanoid.WalkSpeed=originalValues.walkSpeed end
+end)
+
+createSlider("Movement","Walk Speed",16,500,settings.walkSpeed,"",function(val)
+    settings.walkSpeed=val
+    if settings.speedEnabled and humanoid then humanoid.WalkSpeed=val end
+end)
+
+createToggle("Movement","Fly",settings.fly,function(enabled)
+    settings.fly=enabled
+    if enabled then
+        notify("Movement","Vol activé",2)
+        local bv=Instance.new("BodyVelocity"); bv.MaxForce=Vector3.new(9e9,9e9,9e9); bv.Velocity=Vector3.zero; bv.Parent=rootpart
+        local bg=Instance.new("BodyGyro"); bg.MaxTorque=Vector3.new(9e9,9e9,9e9); bg.P=10000; bg.D=500; bg.Parent=rootpart
+        flyConnection=RunService.Heartbeat:Connect(function()
+            if not settings.fly then return end
+            local dir=Vector3.zero
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir=dir+camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir=dir-camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir=dir-camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir=dir+camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir=dir+Vector3.new(0,1,0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then dir=dir-Vector3.new(0,1,0) end
+            bv.Velocity=dir.Magnitude>0 and dir.Unit*settings.flySpeed or Vector3.zero
+            bg.CFrame=camera.CFrame
+        end)
+    else
+        if flyConnection then flyConnection:Disconnect() end
+        if rootpart:FindFirstChild("BodyVelocity") then rootpart.BodyVelocity:Destroy() end
+        if rootpart:FindFirstChild("BodyGyro") then rootpart.BodyGyro:Destroy() end
+    end
+end)
+
+createSlider("Movement","Fly Speed",10,500,settings.flySpeed,"",function(val)
+    settings.flySpeed=val
+end)
+
+createSlider("Movement","Jump Power",50,500,settings.jumpPower,"",function(val)
+    settings.jumpPower=val
+    if humanoid then humanoid.JumpPower=val end
+end)
+
+-- ========================================
+-- ONGLET 4 — VISUAL
+-- ========================================
+
+createSection("Visual","Visuels")
+
+createToggle("Visual","FullBright",settings.fullbright,function(enabled)
+    settings.fullbright=enabled
+    local L=game:GetService("Lighting")
+    if enabled then
+        notify("Visual","FullBright activé",2)
+        L.Brightness=2; L.ClockTime=14; L.FogEnd=100000
+        L.GlobalShadows=false; L.OutdoorAmbient=Color3.fromRGB(128,128,128)
+    else
+        L.Brightness=1; L.ClockTime=12; L.FogEnd=100000; L.GlobalShadows=true
+    end
+end)
+
+createToggle("Visual","No Fog",settings.noFog,function(enabled)
+    settings.noFog=enabled
+    local L=game:GetService("Lighting")
+    if enabled then
+        L.FogEnd=100000
+        for _,v in pairs(L:GetChildren()) do if v:IsA("Atmosphere") then v.Density=0 end end
+    else L.FogEnd=500 end
+end)
+
+createToggle("Visual","FOV Changer",settings.fovChanger,function(enabled)
+    settings.fovChanger=enabled
+    camera.FieldOfView=enabled and settings.fovValue or originalValues.fov
+end)
+
+createSlider("Visual","Valeur FOV",70,120,settings.fovValue,"°",function(val)
+    settings.fovValue=val
+    if settings.fovChanger then camera.FieldOfView=val end
+end)
+
+createToggle("Visual","Troisième personne",settings.thirdPerson,function(enabled)
+    settings.thirdPerson=enabled
+    player.CameraMode=Enum.CameraMode.Classic
+    player.CameraMinZoomDistance=enabled and 5 or 0.5
+end)
+
+-- ========================================
+-- ONGLET 5 — OTHERS
+-- ========================================
+
+createSection("Others","Divers")
+
+createToggle("Others","Anti-AFK",settings.antiAFK,function(enabled)
+    settings.antiAFK=enabled
+    if enabled then
+        table.insert(connections, RunService.Heartbeat:Connect(function()
+            if settings.antiAFK then
+                local vu=game:GetService("VirtualUser")
+                vu:CaptureController(); vu:ClickButton2(Vector2.new())
+            end
+        end))
+    end
+end)
+
+createToggle("Others","Spinbot",settings.spinbot,function(enabled)
+    settings.spinbot=enabled
+end)
+
+createSlider("Others","Spin Speed",1,50,settings.spinSpeed,"",function(val)
+    settings.spinSpeed=val
+end)
+
+createSection("Others","Actions")
+
+createButton("Others","🔓 Unlock All Items",function()
+    notify("Unlock All","Tentative...",2)
+    task.spawn(function()
+        local success=0
+        pcall(function()
+            local RS=game:GetService("ReplicatedStorage")
+            for _,n in pairs({"UnlockItem","BuyItem","PurchaseItem","UnlockWeapon","UnlockSkin"}) do
+                local ev=RS:FindFirstChild(n,true)
+                if ev and ev:IsA("RemoteEvent") then
+                    for _,a in pairs({{" all"},{true},{999999}}) do
+                        pcall(function() ev:FireServer(unpack(a)); success+=1 end)
+                    end
+                end
+            end
+        end)
+        notify("Unlock All", success>0 and "Succès!" or "Échoué", 2)
+    end)
+end)
+
+createButton("Others","🔫 Give All Weapons",function()
+    notify("Weapons","Tentative...",2)
+    task.spawn(function()
+        local count=0
+        pcall(function()
+            local RS=game:GetService("ReplicatedStorage")
+            local w=RS:FindFirstChild("Weapons") or RS:FindFirstChild("Tools")
+            if w then
+                for _,wp in pairs(w:GetChildren()) do
+                    pcall(function() local c=wp:Clone(); c.Parent=player.Backpack; count+=1 end)
+                end
+            end
+        end)
+        notify("Weapons", count>0 and ("Donné "..count.." armes!") or "Aucune arme trouvée", 2)
+    end)
+end)
+
+createButton("Others","💰 Max Money",function()
+    notify("Money","Tentative...",2)
+    task.spawn(function()
+        local count=0
+        pcall(function()
+            if player:FindFirstChild("leaderstats") then
+                for _,s in pairs(player.leaderstats:GetChildren()) do
+                    if s:IsA("IntValue") or s:IsA("NumberValue") then
+                        local n=s.Name:lower()
+                        if n:find("money") or n:find("cash") or n:find("coin") then
+                            pcall(function() s.Value=999999999; count+=1 end)
+                        end
+                    end
+                end
+            end
+        end)
+        notify("Money", count>0 and "Maxé!" or "Échoué", 2)
+    end)
+end)
+
+-- ========================================
+-- BOUTON ADMIN — INTERFACE GESTION DES KEYS
+-- ========================================
+
+createSection("Others","Administration")
+
+createButton("Others","🔑 Gestion des Keys (Admin)",function()
+
+    -- ---- POPUP CODE ADMIN ----
+    local AdminCodeGui = Instance.new("ScreenGui")
+    AdminCodeGui.Name = "ZNKAdminCode"
+    AdminCodeGui.ResetOnSpawn = false
+    AdminCodeGui.DisplayOrder = 9999999999
+    pcall(function()
+        if gethui then AdminCodeGui.Parent = gethui()
+        else AdminCodeGui.Parent = CoreGui end
+    end)
+
+    local Dim = Instance.new("Frame", AdminCodeGui)
+    Dim.Size=UDim2.new(1,0,1,0)
+    Dim.BackgroundColor3=Color3.fromRGB(0,0,0)
+    Dim.BackgroundTransparency=0.5
+    Dim.BorderSizePixel=0
+
+    local CodeFrame = Instance.new("Frame", Dim)
+    CodeFrame.Size=UDim2.new(0,380,0,220)
+    CodeFrame.Position=UDim2.new(0.5,-190,0.5,-110)
+    CodeFrame.BackgroundColor3=Color3.fromRGB(8,12,22)
+    CodeFrame.BorderSizePixel=0
+    Instance.new("UICorner", CodeFrame).CornerRadius=UDim.new(0,14)
+    local CFS=Instance.new("UIStroke", CodeFrame)
+    CFS.Color=Color3.fromRGB(255,180,0); CFS.Thickness=2.5
+
+    local CFBar=Instance.new("Frame", CodeFrame)
+    CFBar.Size=UDim2.new(1,0,0,46); CFBar.BackgroundColor3=Color3.fromRGB(80,50,0)
+    CFBar.BorderSizePixel=0
+    Instance.new("UICorner", CFBar).CornerRadius=UDim.new(0,14)
+    local CFBarFix=Instance.new("Frame", CFBar)
+    CFBarFix.Size=UDim2.new(1,0,0,20); CFBarFix.Position=UDim2.new(0,0,1,-20)
+    CFBarFix.BackgroundColor3=Color3.fromRGB(80,50,0); CFBarFix.BorderSizePixel=0
+    local CFGrad=Instance.new("UIGradient", CFBar)
+    CFGrad.Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(60,35,0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200,130,0))
+    })
+    CFGrad.Rotation=90
+
+    local CFIcon=Instance.new("TextLabel", CFBar)
+    CFIcon.Size=UDim2.new(0,34,1,0); CFIcon.Position=UDim2.new(0,10,0,0)
+    CFIcon.BackgroundTransparency=1; CFIcon.Text="🛡️"
+    CFIcon.Font=Enum.Font.GothamBold; CFIcon.TextSize=22
+    CFIcon.TextColor3=Color3.fromRGB(255,220,80)
+
+    local CFTitle=Instance.new("TextLabel", CFBar)
+    CFTitle.Size=UDim2.new(1,-50,1,0); CFTitle.Position=UDim2.new(0,46,0,0)
+    CFTitle.BackgroundTransparency=1; CFTitle.Text="ZNK HUB — Accès Admin"
+    CFTitle.Font=Enum.Font.GothamBold; CFTitle.TextSize=15
+    CFTitle.TextColor3=Color3.fromRGB(255,230,100)
+    CFTitle.TextXAlignment=Enum.TextXAlignment.Left
+
+    local CFSub=Instance.new("TextLabel", CodeFrame)
+    CFSub.Size=UDim2.new(1,-24,0,18); CFSub.Position=UDim2.new(0,12,0,52)
+    CFSub.BackgroundTransparency=1; CFSub.Text="Entrez le code administrateur :"
+    CFSub.Font=Enum.Font.Gotham; CFSub.TextSize=12
+    CFSub.TextColor3=Color3.fromRGB(200,180,100)
+    CFSub.TextXAlignment=Enum.TextXAlignment.Left
+
+    local CodeBG=Instance.new("Frame", CodeFrame)
+    CodeBG.Size=UDim2.new(1,-24,0,40); CodeBG.Position=UDim2.new(0,12,0,74)
+    CodeBG.BackgroundColor3=Color3.fromRGB(14,20,40); CodeBG.BorderSizePixel=0
+    Instance.new("UICorner", CodeBG).CornerRadius=UDim.new(0,8)
+    local CodeStroke=Instance.new("UIStroke", CodeBG)
+    CodeStroke.Color=Color3.fromRGB(150,100,0); CodeStroke.Thickness=1.5
+
+    local CodeBox=Instance.new("TextBox", CodeBG)
+    CodeBox.Size=UDim2.new(1,-16,1,0); CodeBox.Position=UDim2.new(0,8,0,0)
+    CodeBox.BackgroundTransparency=1; CodeBox.PlaceholderText="Code admin..."
+    CodeBox.PlaceholderColor3=Color3.fromRGB(100,80,30)
+    CodeBox.Text=""; CodeBox.Font=Enum.Font.GothamBold; CodeBox.TextSize=14
+    CodeBox.TextColor3=Color3.fromRGB(255,220,80)
+    CodeBox.ClearTextOnFocus=false
+    CodeBox.TextTransparency=0 -- texte visible (pas caché ici)
+
+    CodeBox.Focused:Connect(function()
+        TweenService:Create(CodeStroke, TweenInfo.new(0.18), {Color=Color3.fromRGB(255,180,0), Thickness=2}):Play()
+    end)
+    CodeBox.FocusLost:Connect(function()
+        TweenService:Create(CodeStroke, TweenInfo.new(0.18), {Color=Color3.fromRGB(150,100,0), Thickness=1.5}):Play()
+    end)
+
+    local CodeStatus=Instance.new("TextLabel", CodeFrame)
+    CodeStatus.Size=UDim2.new(1,-24,0,16); CodeStatus.Position=UDim2.new(0,12,0,118)
+    CodeStatus.BackgroundTransparency=1; CodeStatus.Text=""
+    CodeStatus.Font=Enum.Font.GothamBold; CodeStatus.TextSize=12
+    CodeStatus.TextXAlignment=Enum.TextXAlignment.Left
+
+    local CodeConfirm=Instance.new("TextButton", CodeFrame)
+    CodeConfirm.Size=UDim2.new(1,-24,0,38); CodeConfirm.Position=UDim2.new(0,12,0,138)
+    CodeConfirm.BackgroundColor3=Color3.fromRGB(140,90,0)
+    CodeConfirm.Text="ACCÉDER AU PANEL ADMIN"
+    CodeConfirm.Font=Enum.Font.GothamBold; CodeConfirm.TextSize=13
+    CodeConfirm.TextColor3=Color3.fromRGB(255,240,150); CodeConfirm.AutoButtonColor=false
+    Instance.new("UICorner", CodeConfirm).CornerRadius=UDim.new(0,8)
+    local CG=Instance.new("UIGradient", CodeConfirm)
+    CG.Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100,60,0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200,130,0))
+    })
+    CG.Rotation=90
+
+    local CodeCancelBtn=Instance.new("TextButton", CodeFrame)
+    CodeCancelBtn.Size=UDim2.new(1,-24,0,0) -- invisible mais cliquable sur dim
+    CodeCancelBtn.Position=UDim2.new(0,12,0,184)
+    CodeCancelBtn.BackgroundTransparency=1; CodeCancelBtn.Text=""
+    CodeCancelBtn.AutoButtonColor=false
+
+    -- Fermer en cliquant sur la dim
+    Dim.InputBegan:Connect(function(inp)
+        if inp.UserInputType==Enum.UserInputType.MouseButton1 then
+            AdminCodeGui:Destroy()
+        end
+    end)
+
+    -- Animation entrée
+    CodeFrame.Size=UDim2.new(0,0,0,0)
+    CodeFrame.Position=UDim2.new(0.5,0,0.5,0)
+    TweenService:Create(CodeFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size=UDim2.new(0,380,0,220),
+        Position=UDim2.new(0.5,-190,0.5,-110)
+    }):Play()
+
+    -- Shake code frame
+    local function shakeCode()
+        for i=1,6 do
+            local ox=(i%2==0) and 8 or -8
+            TweenService:Create(CodeFrame, TweenInfo.new(0.04), {
+                Position=UDim2.new(0.5,-190+ox,0.5,-110)
+            }):Play()
+            task.wait(0.045)
+        end
+        TweenService:Create(CodeFrame, TweenInfo.new(0.08), {
+            Position=UDim2.new(0.5,-190,0.5,-110)
+        }):Play()
+    end
+
+    local function openAdminPanel()
+        AdminCodeGui:Destroy()
+
+        -- ===== PANEL D'ADMINISTRATION DES KEYS =====
+        local AdminGui = Instance.new("ScreenGui")
+        AdminGui.Name = "ZNKAdminPanel"
+        AdminGui.ResetOnSpawn = false
+        AdminGui.DisplayOrder = 9999999998
+        pcall(function()
+            if gethui then AdminGui.Parent = gethui()
+            else AdminGui.Parent = CoreGui end
+        end)
+
+        local ADim=Instance.new("Frame", AdminGui)
+        ADim.Size=UDim2.new(1,0,1,0)
+        ADim.BackgroundColor3=Color3.fromRGB(0,0,0)
+        ADim.BackgroundTransparency=0.45
+        ADim.BorderSizePixel=0
+
+        local APanel=Instance.new("Frame", ADim)
+        APanel.Size=UDim2.new(0,580,0,480)
+        APanel.Position=UDim2.new(0.5,-290,0.5,-240)
+        APanel.BackgroundColor3=Color3.fromRGB(8,12,22)
+        APanel.BorderSizePixel=0
+        APanel.Active=true
+        APanel.Draggable=true
+        Instance.new("UICorner", APanel).CornerRadius=UDim.new(0,14)
+        local APS=Instance.new("UIStroke", APanel)
+        APS.Color=Color3.fromRGB(255,180,0); APS.Thickness=2.5
+
+        -- Header admin
+        local AHead=Instance.new("Frame", APanel)
+        AHead.Size=UDim2.new(1,0,0,50); AHead.BackgroundColor3=Color3.fromRGB(80,50,0)
+        AHead.BorderSizePixel=0
+        Instance.new("UICorner", AHead).CornerRadius=UDim.new(0,14)
+        local AHFix=Instance.new("Frame", AHead)
+        AHFix.Size=UDim2.new(1,0,0,22); AHFix.Position=UDim2.new(0,0,1,-22)
+        AHFix.BackgroundColor3=Color3.fromRGB(80,50,0); AHFix.BorderSizePixel=0
+        local AHGrad=Instance.new("UIGradient", AHead)
+        AHGrad.Color=ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(60,35,0)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(200,130,0))
+        })
+        AHGrad.Rotation=90
+
+        local AHIco=Instance.new("TextLabel", AHead)
+        AHIco.Size=UDim2.new(0,36,1,0); AHIco.Position=UDim2.new(0,12,0,0)
+        AHIco.BackgroundTransparency=1; AHIco.Text="🛡️"
+        AHIco.Font=Enum.Font.GothamBold; AHIco.TextSize=24
+        AHIco.TextColor3=Color3.fromRGB(255,220,80)
+
+        local AHTit=Instance.new("TextLabel", AHead)
+        AHTit.Size=UDim2.new(1,-140,0,28); AHTit.Position=UDim2.new(0,52,0,4)
+        AHTit.BackgroundTransparency=1; AHTit.Text="ZNK HUB — Panel Admin · Gestion des Keys"
+        AHTit.Font=Enum.Font.GothamBold; AHTit.TextSize=15
+        AHTit.TextColor3=Color3.fromRGB(255,230,100)
+        AHTit.TextXAlignment=Enum.TextXAlignment.Left
+
+        local AHSub=Instance.new("TextLabel", AHead)
+        AHSub.Size=UDim2.new(1,-140,0,14); AHSub.Position=UDim2.new(0,52,0,32)
+        AHSub.BackgroundTransparency=1; AHSub.Text="Accès administrateur vérifié ✓"
+        AHSub.Font=Enum.Font.Gotham; AHSub.TextSize=11
+        AHSub.TextColor3=Color3.fromRGB(200,160,60)
+        AHSub.TextXAlignment=Enum.TextXAlignment.Left
+
+        local ACloseBtn=Instance.new("TextButton", AHead)
+        ACloseBtn.Size=UDim2.new(0,30,0,30); ACloseBtn.Position=UDim2.new(1,-40,0.5,-15)
+        ACloseBtn.BackgroundColor3=Color3.fromRGB(180,30,30); ACloseBtn.Text="✕"
+        ACloseBtn.Font=Enum.Font.GothamBold; ACloseBtn.TextSize=14
+        ACloseBtn.TextColor3=Color3.fromRGB(255,255,255); ACloseBtn.AutoButtonColor=false
+        Instance.new("UICorner", ACloseBtn).CornerRadius=UDim.new(0,7)
+        ACloseBtn.MouseButton1Click:Connect(function() AdminGui:Destroy() end)
+
+        -- Zone ajout key
+        local AddZone=Instance.new("Frame", APanel)
+        AddZone.Size=UDim2.new(1,-24,0,44); AddZone.Position=UDim2.new(0,12,0,58)
+        AddZone.BackgroundColor3=Color3.fromRGB(12,18,35); AddZone.BorderSizePixel=0
+        Instance.new("UICorner", AddZone).CornerRadius=UDim.new(0,8)
+        Instance.new("UIStroke", AddZone).Color=Color3.fromRGB(60,80,160)
+
+        local NewKeyBox=Instance.new("TextBox", AddZone)
+        NewKeyBox.Size=UDim2.new(1,-230,1,0); NewKeyBox.Position=UDim2.new(0,10,0,0)
+        NewKeyBox.BackgroundTransparency=1; NewKeyBox.PlaceholderText="Nouvelle clé à ajouter..."
+        NewKeyBox.PlaceholderColor3=Color3.fromRGB(80,90,130)
+        NewKeyBox.Text=""; NewKeyBox.Font=Enum.Font.GothamBold; NewKeyBox.TextSize=13
+        NewKeyBox.TextColor3=Color3.fromRGB(200,220,255); NewKeyBox.ClearTextOnFocus=false
+
+        local AddBtn=Instance.new("TextButton", AddZone)
+        AddBtn.Size=UDim2.new(0,100,0,30); AddBtn.Position=UDim2.new(1,-218,0.5,-15)
+        AddBtn.BackgroundColor3=Color3.fromRGB(20,120,60); AddBtn.Text="✚ Ajouter"
+        AddBtn.Font=Enum.Font.GothamBold; AddBtn.TextSize=12
+        AddBtn.TextColor3=Color3.fromRGB(150,255,180); AddBtn.AutoButtonColor=false
+        Instance.new("UICorner", AddBtn).CornerRadius=UDim.new(0,7)
+
+        local GenBtn=Instance.new("TextButton", AddZone)
+        GenBtn.Size=UDim2.new(0,106,0,30); GenBtn.Position=UDim2.new(1,-110,0.5,-15)
+        GenBtn.BackgroundColor3=Color3.fromRGB(60,20,120); GenBtn.Text="✦ Générer"
+        GenBtn.Font=Enum.Font.GothamBold; GenBtn.TextSize=12
+        GenBtn.TextColor3=Color3.fromRGB(200,150,255); GenBtn.AutoButtonColor=false
+        Instance.new("UICorner", GenBtn).CornerRadius=UDim.new(0,7)
+
+        -- Compteur
+        local CountLbl=Instance.new("TextLabel", APanel)
+        CountLbl.Size=UDim2.new(1,-24,0,18); CountLbl.Position=UDim2.new(0,12,0,106)
+        CountLbl.BackgroundTransparency=1
+        CountLbl.Font=Enum.Font.GothamBold; CountLbl.TextSize=12
+        CountLbl.TextColor3=Color3.fromRGB(120,150,220)
+        CountLbl.TextXAlignment=Enum.TextXAlignment.Left
+
+        -- Scroll des keys
+        local KeyScroll=Instance.new("ScrollingFrame", APanel)
+        KeyScroll.Size=UDim2.new(1,-24,0,302); KeyScroll.Position=UDim2.new(0,12,0,128)
+        KeyScroll.BackgroundColor3=Color3.fromRGB(10,15,30); KeyScroll.BorderSizePixel=0
+        KeyScroll.ScrollBarThickness=4; KeyScroll.CanvasSize=UDim2.new(0,0,0,0)
+        KeyScroll.ScrollBarImageColor3=Color3.fromRGB(200,130,0)
+        Instance.new("UICorner", KeyScroll).CornerRadius=UDim.new(0,8)
+        Instance.new("UIStroke", KeyScroll).Color=Color3.fromRGB(50,70,140)
+
+        local KList=Instance.new("UIListLayout", KeyScroll)
+        KList.Padding=UDim.new(0,4); KList.SortOrder=Enum.SortOrder.LayoutOrder
+        local KPad=Instance.new("UIPadding", KeyScroll)
+        KPad.PaddingTop=UDim.new(0,6); KPad.PaddingLeft=UDim.new(0,6); KPad.PaddingRight=UDim.new(0,6)
+        KList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            KeyScroll.CanvasSize=UDim2.new(0,0,0,KList.AbsoluteContentSize.Y+12)
+        end)
+
+        -- Table des keys actives (copie locale modifiable)
+        local activeKeys = {}
+        for k in pairs(VALID_KEYS) do
+            table.insert(activeKeys, k)
+        end
+
+        local function updateCount()
+            CountLbl.Text = "🔑 " .. #activeKeys .. " clé(s) active(s) dans le système"
+        end
+
+        local function rebuildRows()
+            for _, c in pairs(KeyScroll:GetChildren()) do
+                if c:IsA("Frame") then c:Destroy() end
+            end
+
+            for i, key in ipairs(activeKeys) do
+                local Row=Instance.new("Frame", KeyScroll)
+                Row.Size=UDim2.new(1,0,0,42)
+                Row.BackgroundColor3=Color3.fromRGB(15,22,45)
+                Row.BorderSizePixel=0
+                Instance.new("UICorner", Row).CornerRadius=UDim.new(0,7)
+
+                -- Numéro
+                local NumLbl=Instance.new("TextLabel", Row)
+                NumLbl.Size=UDim2.new(0,24,1,0); NumLbl.Position=UDim2.new(0,8,0,0)
+                NumLbl.BackgroundTransparency=1; NumLbl.Text=tostring(i)
+                NumLbl.Font=Enum.Font.GothamBold; NumLbl.TextSize=11
+                NumLbl.TextColor3=Color3.fromRGB(100,120,180)
+
+                -- Clé
+                local KeyLbl=Instance.new("TextLabel", Row)
+                KeyLbl.Size=UDim2.new(1,-200,1,0); KeyLbl.Position=UDim2.new(0,34,0,0)
+                KeyLbl.BackgroundTransparency=1; KeyLbl.Text=key
+                KeyLbl.Font=Enum.Font.GothamBold; KeyLbl.TextSize=13
+                KeyLbl.TextColor3 = (key=="znkxvanouille")
+                    and Color3.fromRGB(255,220,80)
+                    or Color3.fromRGB(200,220,255)
+                KeyLbl.TextXAlignment=Enum.TextXAlignment.Left
+
+                -- Badge admin pour la key principale
+                if key=="znkxvanouille" then
+                    local Badge=Instance.new("TextLabel", Row)
+                    Badge.Size=UDim2.new(0,50,0,18); Badge.Position=UDim2.new(1,-164,0.5,-9)
+                    Badge.BackgroundColor3=Color3.fromRGB(80,50,0)
+                    Badge.Text="ADMIN"; Badge.Font=Enum.Font.GothamBold; Badge.TextSize=10
+                    Badge.TextColor3=Color3.fromRGB(255,210,60)
+                    Instance.new("UICorner", Badge).CornerRadius=UDim.new(0,5)
+                end
+
+                -- Bouton Copier
+                local CopyBtn=Instance.new("TextButton", Row)
+                CopyBtn.Size=UDim2.new(0,70,0,28); CopyBtn.Position=UDim2.new(1,-158,0.5,-14)
+                CopyBtn.BackgroundColor3=Color3.fromRGB(20,50,120); CopyBtn.Text="📋 Copier"
+                CopyBtn.Font=Enum.Font.GothamBold; CopyBtn.TextSize=11
+                CopyBtn.TextColor3=Color3.fromRGB(150,190,255); CopyBtn.AutoButtonColor=false
+                Instance.new("UICorner", CopyBtn).CornerRadius=UDim.new(0,6)
+                CopyBtn.MouseButton1Click:Connect(function()
+                    pcall(function() setclipboard(key) end)
+                    CopyBtn.Text="✓ Copié"
+                    CopyBtn.TextColor3=Color3.fromRGB(80,220,120)
+                    task.delay(1.5, function()
+                        CopyBtn.Text="📋 Copier"
+                        CopyBtn.TextColor3=Color3.fromRGB(150,190,255)
+                    end)
+                end)
+
+                -- Bouton Révoquer (désactivé pour la clé admin)
+                local RevokeBtn=Instance.new("TextButton", Row)
+                RevokeBtn.Size=UDim2.new(0,80,0,28); RevokeBtn.Position=UDim2.new(1,-82,0.5,-14)
+                RevokeBtn.Text="🗑️ Révoquer"; RevokeBtn.Font=Enum.Font.GothamBold; RevokeBtn.TextSize=11
+                RevokeBtn.AutoButtonColor=false
+                Instance.new("UICorner", RevokeBtn).CornerRadius=UDim.new(0,6)
+
+                if key=="znkxvanouille" then
+                    RevokeBtn.BackgroundColor3=Color3.fromRGB(40,40,40)
+                    RevokeBtn.TextColor3=Color3.fromRGB(80,80,80)
+                else
+                    RevokeBtn.BackgroundColor3=Color3.fromRGB(80,20,20)
+                    RevokeBtn.TextColor3=Color3.fromRGB(255,120,120)
+                    RevokeBtn.MouseButton1Click:Connect(function()
+                        VALID_KEYS[key]=nil
+                        for j,k in ipairs(activeKeys) do
+                            if k==key then table.remove(activeKeys,j); break end
+                        end
+                        rebuildRows()
+                        updateCount()
+                        notify("Admin","🗑️ Clé révoquée : "..key,3)
+                    end)
+                end
+            end
+            updateCount()
+        end
+
+        -- Générer une clé aléatoire
+        local function generateKey()
+            local chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            local function rand(n)
+                local s=""
+                for _=1,n do
+                    local r=math.random(1,#chars)
+                    s=s..chars:sub(r,r)
+                end
+                return s
+            end
+            return "ZNK-"..rand(4).."-"..rand(4).."-"..rand(4)
+        end
+
+        -- Ajouter une key
+        local function addKey(k)
+            k=k:match("^%s*(.-)%s*$")
+            if k=="" then
+                notify("Admin","⚠️ Clé vide !",2); return
+            end
+            if VALID_KEYS[k] then
+                notify("Admin","⚠️ Clé déjà existante !",2); return
+            end
+            VALID_KEYS[k]=true
+            table.insert(activeKeys, k)
+            rebuildRows()
+            updateCount()
+            notify("Admin","✅ Clé ajoutée : "..k,3)
+            NewKeyBox.Text=""
+        end
+
+        AddBtn.MouseButton1Click:Connect(function()
+            addKey(NewKeyBox.Text)
+        end)
+
+        GenBtn.MouseButton1Click:Connect(function()
+            local newKey=generateKey()
+            NewKeyBox.Text=newKey
+            notify("Admin","✦ Clé générée : "..newKey,3)
+        end)
+
+        -- Build initial
+        rebuildRows()
+
+        -- Animation entrée panel
+        APanel.Size=UDim2.new(0,0,0,0)
+        APanel.Position=UDim2.new(0.5,0,0.5,0)
+        TweenService:Create(APanel, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size=UDim2.new(0,580,0,480),
+            Position=UDim2.new(0.5,-290,0.5,-240)
+        }):Play()
+
+        notify("Admin","🛡️ Panel admin ouvert",2)
+    end
+
+    -- Valider code admin
+    CodeConfirm.MouseButton1Click:Connect(function()
+        local entered = CodeBox.Text:match("^%s*(.-)%s*$")
+        TweenService:Create(CodeConfirm, TweenInfo.new(0.07), {Size=UDim2.new(1,-26,0,36)}):Play()
+        task.wait(0.07)
+        TweenService:Create(CodeConfirm, TweenInfo.new(0.07), {Size=UDim2.new(1,-24,0,38)}):Play()
+
+        if entered==ADMIN_CODE then
+            CodeStatus.Text="✅ Code correct !"
+            CodeStatus.TextColor3=Color3.fromRGB(80,220,120)
+            CFS.Color=Color3.fromRGB(80,220,120)
+            task.wait(0.6)
+            openAdminPanel()
+        else
+            CodeStatus.Text="❌ Code incorrect."
+            CodeStatus.TextColor3=Color3.fromRGB(220,60,60)
+            CFS.Color=Color3.fromRGB(220,60,60)
+            shakeCode()
+            CodeBox.Text=""
+            task.delay(0.5, function()
+                TweenService:Create(CFS, TweenInfo.new(0.2), {Color=Color3.fromRGB(255,180,0)}):Play()
+            end)
+        end
+    end)
+end)
+
+-- ========================================
+-- AIMBOT LOOPS
+-- ========================================
+
+local function getClosestInFOV()
+    local closest,shortest=nil,math.huge
+    local sc=Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)
+    for _,plr in pairs(Players:GetPlayers()) do
+        if plr~=player and plr.Character then
+            local tp=plr.Character:FindFirstChild(settings.targetPart)
+            local hum=plr.Character:FindFirstChildOfClass("Humanoid")
+            if tp and hum and hum.Health>0 then
+                local sp,on=camera:WorldToViewportPoint(tp.Position)
+                if on then
+                    local d=(Vector2.new(sp.X,sp.Y)-sc).Magnitude
+                    if d<=settings.aimbotFOV and d<shortest then closest=plr; shortest=d end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+table.insert(connections, UserInputService.InputBegan:Connect(function(inp)
+    if inp.UserInputType==Enum.UserInputType.MouseButton2 then
+        isRightClickHeld=true
+        if settings.aimbot or settings.aimbotLock then lockedTarget=getClosestInFOV() end
+    end
+end))
+
+table.insert(connections, UserInputService.InputEnded:Connect(function(inp)
+    if inp.UserInputType==Enum.UserInputType.MouseButton2 then
+        isRightClickHeld=false; lockedTarget=nil
+    end
+end))
+
+table.insert(connections, RunService.RenderStepped:Connect(function()
+    if (settings.aimbotLock or settings.aimbot) and isRightClickHeld then
+        if not lockedTarget or not lockedTarget.Character then lockedTarget=getClosestInFOV() end
+        if lockedTarget and lockedTarget.Character then
+            local tp=lockedTarget.Character:FindFirstChild(settings.targetPart)
+            local hum=lockedTarget.Character:FindFirstChildOfClass("Humanoid")
+            if tp and hum and hum.Health>0 then
+                camera.CFrame=camera.CFrame:Lerp(CFrame.new(camera.CFrame.Position, tp.Position), 1/settings.aimbotSmooth)
+                if settings.aimbot and settings.autoShoot then pcall(function() mouse1click() end) end
+            else lockedTarget=nil end
+        end
+    end
+    if settings.triggerBot then
+        local mt=player:GetMouse().Target
+        if mt then
+            local tp=Players:GetPlayerFromCharacter(mt.Parent)
+            if tp and tp~=player then pcall(function() mouse1click() end) end
+        end
+    end
+    if (settings.aimbotLock or settings.aimbot) and fovCircle and settings.showFOV then
+        fovCircle.Position=Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)
+        fovCircle.Radius=settings.aimbotFOV; fovCircle.Visible=true
+    end
+end))
+
+table.insert(connections, RunService.Stepped:Connect(function()
+    if settings.noclip and character then
+        for _,p in pairs(character:GetDescendants()) do
+            if p:IsA("BasePart") then p.CanCollide=false end
+        end
+    end
+    if settings.infiniteJump and humanoid and humanoid:GetState()==Enum.HumanoidStateType.Jumping then
+        humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+    end
+    if settings.spinbot and rootpart then
+        rootpart.CFrame=rootpart.CFrame*CFrame.Angles(0, math.rad(settings.spinSpeed), 0)
+    end
+end))
+
+-- ========================================
+-- MINIMIZE & CLOSE
+-- ========================================
+
+local minimized = false
+local function setMin(state)
+    minimized=state
+    if state then
+        TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            Size=UDim2.new(0,MAIN_W,0,TITLEBAR_H)
+        }):Play()
+        Sidebar.Visible=false; Content.Visible=false; MinBtn.Text="□"
+    else
+        Sidebar.Visible=true; Content.Visible=true
+        TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size=UDim2.new(0,MAIN_W,0,MAIN_H)
+        }):Play()
+        MinBtn.Text="─"
+    end
+end
+
+MinBtn.MouseButton1Click:Connect(function() setMin(not minimized) end)
+CloseBtn.MouseButton1Click:Connect(function()
+    notify("ZNK Hub","Fermé !",2)
+    cleanup(); task.wait(0.5); ScreenGui:Destroy()
+end)
+
+for _,b in pairs({MinBtn, CloseBtn}) do
+    b.MouseEnter:Connect(function() TweenService:Create(b, TweenInfo.new(0.15), {BackgroundTransparency=0.3}):Play() end)
+    b.MouseLeave:Connect(function() TweenService:Create(b, TweenInfo.new(0.15), {BackgroundTransparency=0}):Play() end)
+end
+
+-- ========================================
+-- INIT — ACTIVATION TAB PAR DÉFAUT
+-- ========================================
+
+tabBtns["Wallhack"].btn.BackgroundColor3=Color3.fromRGB(20,50,120)
+tabBtns["Wallhack"].bar.Visible=true
+tabBtns["Wallhack"].icon.TextColor3=Color3.fromRGB(255,255,255)
+tabBtns["Wallhack"].lbl.TextColor3=Color3.fromRGB(30,100,255)
+
+Main.Size=UDim2.new(0,0,0,0)
+Main.Position=UDim2.new(0.5,0,0.5,0)
+TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    Size=UDim2.new(0,MAIN_W,0,MAIN_H),
+    Position=UDim2.new(0.5,-MAIN_W/2,0.5,-MAIN_H/2)
+}):Play()
+
+task.delay(0.7, function()
+    notify("ZNK HUB BEST CHEAT","✅ Chargé ! Bienvenue.",3)
+end)
